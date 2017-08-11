@@ -19,6 +19,7 @@ LPDIRECT3DINDEXBUFFER9 i_buffer = NULL;
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
+#define new_line 123
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 IDirect3DDevice9*	pDevice = nullptr;
