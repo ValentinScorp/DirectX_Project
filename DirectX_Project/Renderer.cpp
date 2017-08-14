@@ -195,6 +195,18 @@ void Renderer::EndScene()
 
 void Renderer::Destroy()
 {
+	if (v_buffer) {
+		v_buffer->Release();
+		v_buffer = NULL;
+	}
+	if (i_buffer) {
+		i_buffer->Release();
+		i_buffer = NULL;
+	}
+	if (g_texture) {
+		g_texture->Release();
+		g_texture = NULL;
+	}
 	if (pDevice) {
 		pDevice->Release();
 		pDevice = NULL;
