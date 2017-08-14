@@ -1,25 +1,11 @@
-#include "Graphics.h"
+#include "Renderer.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
 
-struct CUSTOMVERTEX {
-	FLOAT X, Y, Z;
-	D3DVECTOR NORMAL;
-	FLOAT    tu, tv;
-};
-#define CUSTOMFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)	
+Renderer::Renderer()
+{
+}
 
-IDirect3D9*			pDirect3D = nullptr;
-IDirect3DDevice9*	pDevice = nullptr;
-IDirect3DTexture9*	g_texture = nullptr;
-
-LPDIRECT3DVERTEXBUFFER9 v_buffer = NULL;
-LPDIRECT3DINDEXBUFFER9 i_buffer = NULL;
-
-float index = 0.0f;
-
-void createDevice(HWND hWnd)
+void Renderer::Initialize(HWND hWnd)
 {
 	IDirect3D9*	pDirect3D = Direct3DCreate9(D3D_SDK_VERSION);
 
@@ -30,14 +16,12 @@ void createDevice(HWND hWnd)
 	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 	d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-	
-	pDirect3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE, &d3dpp, &pDevice);
 
+	pDirect3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE, &d3dpp, &pDevice);
 }
 
-void initializeGraphics()
+void Renderer::InitializeGeometry()
 {
-	// create the vertices using the CUSTOMVERTEX struct
 	CUSTOMVERTEX vertices[] =
 	{
 		{ -3.0f, -3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, },    // side 1
@@ -115,9 +99,14 @@ void initializeGraphics()
 	i_buffer->Lock(0, 0, (void**)&pVoid, 0);
 	memcpy(pVoid, indices, sizeof(indices));
 	i_buffer->Unlock();
+
+
+	HRESULT hr = D3D_OK;
+
+	hr = D3DXCreateTextureFromFile(pDevice, L"brown-paper.bmp", &g_texture);
 }
 
-void initializeLight()
+void Renderer::InitializeLightAndMaterials()
 {
 	D3DLIGHT9 light;    // create the light struct
 	D3DMATERIAL9 material;
@@ -147,28 +136,7 @@ void initializeLight()
 	material.Specular = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);    // set ambient color to white
 	material.Power = 5.0f;
 	pDevice->SetMaterial(&material);    // set the globably-used material to &material
-}
 
-void attachGraphicsToDevice()
-{
-	// select the vertex and index buffers to use
-	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
-	pDevice->SetIndices(i_buffer);
-}
-
-void loadTexture()
-{
-	HRESULT hr = D3D_OK;
-
-	hr = D3DXCreateTextureFromFile(pDevice, L"brown-paper.bmp", &g_texture);
-
-	if (FAILED(hr)) {
-		//printf("Error loading texture %d", hr);
-	}
-}
-
-void initializeOther()
-{
 	pDevice->SetTexture(0, g_texture);
 
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
@@ -176,12 +144,15 @@ void initializeOther()
 	pDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));
 }
 
-void drawAll()
+void Renderer::BeginScene()
 {
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 0.0f, 0);
 	pDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 	pDevice->BeginScene();
+}
 
+void Renderer::Draw()
+{
 	pDevice->SetFVF(CUSTOMFVF);
 
 	D3DXMATRIX matView;
@@ -202,31 +173,28 @@ void drawAll()
 	pDevice->SetTransform(D3DTS_WORLD, &(matRotateY));
 	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
-	attachGraphicsToDevice();
+	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
+	pDevice->SetIndices(i_buffer);
 
 	// draw the cube
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24, 0, 12);
+	
+	D3DXMATRIX matrixMoveX;
+	D3DXMatrixTranslation(&matrixMoveX, 0.0f, 5.0f, 0.0f);
+	pDevice->SetTransform(D3DTS_WORLD, &(matrixMoveX));
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
+	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24, 0, 12);
+}
+
+void Renderer::EndScene()
+{
 	pDevice->EndScene();
 	pDevice->Present(NULL, NULL, NULL, NULL);
 }
 
-void clearAll()
+void Renderer::Destroy()
 {
-	if (g_texture) {
-		g_texture->Release();
-		g_texture = NULL;
-	}
-
-	if (v_buffer) {
-		v_buffer->Release();
-		v_buffer = NULL;
-	}
-	if (i_buffer) {
-		i_buffer->Release();
-		i_buffer = NULL;
-	}
-
 	if (pDevice) {
 		pDevice->Release();
 		pDevice = NULL;
@@ -235,4 +203,8 @@ void clearAll()
 		pDirect3D->Release();
 		pDirect3D = NULL;
 	}
+}
+
+Renderer::~Renderer()
+{
 }

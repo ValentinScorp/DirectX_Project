@@ -2,14 +2,17 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "Graphics.h"
+//#include "Graphics.h"
+#include "Renderer.h"
+#include "Scene.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
-
+Renderer *renderer = nullptr;
+Scene *scene = nullptr;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
@@ -36,14 +39,22 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-	// --------------directX ------------------------
 
-	createDevice(hWnd);
+	// --------------directX ------------------------
+	/*createDevice(hWnd);
 	
 	initializeGraphics();
 	loadTexture();
 	initializeLight(); 
-	initializeOther();
+	initializeOther();*/
+
+	renderer = new Renderer();
+	renderer->Initialize(hWnd);
+	renderer->InitializeGeometry();
+	renderer->InitializeLightAndMaterials();
+
+	scene = new Scene();
+	scene->Initialize();
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -52,11 +63,25 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {
-			drawAll();
+			//drawAll();
+
+			renderer->BeginScene();
+
+			renderer->Draw();
+
+			renderer->EndScene();
 		}
 	}
 
-	clearAll();
+	scene->Destroy();
+	delete scene;
+	scene = nullptr;
+
+	renderer->Destroy();
+	delete renderer;
+	renderer = nullptr;
+
+	//clearAll();
 
 	UnregisterClass(L"My DirectX Project", hInstance);
 
