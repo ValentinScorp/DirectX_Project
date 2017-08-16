@@ -147,10 +147,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX_Project.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ObjectFactory.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
   </ItemGroup>

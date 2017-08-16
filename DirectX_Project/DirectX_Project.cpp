@@ -2,7 +2,7 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-//#include "Graphics.h"
+#include "ObjectFactory.h"
 #include "Renderer.h"
 #include "Scene.h"
 
@@ -13,6 +13,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 Renderer *renderer = nullptr;
 Scene *scene = nullptr;
+
+ObjectFactory *objectFactory = nullptr;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
@@ -30,7 +32,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	wcex.lpszClassName = L"My DirectX Project";
 	wcex.hIconSm = NULL;
 	RegisterClassExW(&wcex);
-		
+
 	HWND hWnd = CreateWindowW(L"My DirectX Project", L"DirectX Project", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, SCREEN_WIDTH, SCREEN_HEIGHT, nullptr, nullptr, hInstance, nullptr);
 
 	if (hWnd == NULL) {
@@ -40,21 +42,15 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	// --------------directX ------------------------
-	/*createDevice(hWnd);
-	
-	initializeGraphics();
-	loadTexture();
-	initializeLight(); 
-	initializeOther();*/
-
 	renderer = new Renderer();
 	renderer->Initialize(hWnd);
 	renderer->InitializeGeometry();
 	renderer->InitializeLightAndMaterials();
 
+	objectFactory = new ObjectFactory();
+
 	scene = new Scene();
-	scene->Initialize();
+	scene->Initialize(objectFactory);
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -62,26 +58,29 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-		} else {
-			//drawAll();
-
+		}
+		else {
 			renderer->BeginScene();
-
 			renderer->Draw();
-
 			renderer->EndScene();
 		}
 	}
 
-	scene->Destroy();
-	delete scene;
-	scene = nullptr;
+	if (scene != nullptr) {
+		scene->Destroy();
+		delete scene;
+		scene = nullptr;
+	}
 
-	renderer->Destroy();
-	delete renderer;
-	renderer = nullptr;
+	if (objectFactory != nullptr) {
+		delete objectFactory;
+	}
 
-	//clearAll();
+	if (renderer != nullptr) {
+		renderer->Destroy();
+		delete renderer;
+		renderer = nullptr;
+	}
 
 	UnregisterClass(L"My DirectX Project", hInstance);
 
