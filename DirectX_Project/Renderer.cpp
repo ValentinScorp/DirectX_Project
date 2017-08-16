@@ -20,92 +20,6 @@ void Renderer::Initialize(HWND hWnd)
 	pDirect3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE, &d3dpp, &pDevice);
 }
 
-void Renderer::InitializeGeometry()
-{
-	CUSTOMVERTEX vertices[] =
-	{
-		{ -3.0f, -3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, },    // side 1
-		{ 3.0f, -3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, },
-		{ -3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, },
-		{ 3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 1.0f,  1.0f, 1.0f, },
-
-		{ -3.0f, -3.0f, -3.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, },    // side 2
-		{ -3.0f, 3.0f, -3.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, },
-		{ 3.0f, -3.0f, -3.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, },
-		{ 3.0f, 3.0f, -3.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, },
-
-		{ -3.0f, 3.0f, -3.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, },    // side 3
-		{ -3.0f, 3.0f, 3.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, },
-		{ 3.0f, 3.0f, -3.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, },
-		{ 3.0f, 3.0f, 3.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, },
-
-		{ -3.0f, -3.0f, -3.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, },    // side 4
-		{ 3.0f, -3.0f, -3.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, },
-		{ -3.0f, -3.0f, 3.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, },
-		{ 3.0f, -3.0f, 3.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, },
-
-		{ 3.0f, -3.0f, -3.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, },    // side 5
-		{ 3.0f, 3.0f, -3.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, },
-		{ 3.0f, -3.0f, 3.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, },
-		{ 3.0f, 3.0f, 3.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, },
-
-		{ -3.0f, -3.0f, -3.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, },    // side 6
-		{ -3.0f, -3.0f, 3.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, },
-		{ -3.0f, 3.0f, -3.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, },
-		{ -3.0f, 3.0f, 3.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, },
-	};
-
-	// create a vertex buffer interface called v_buffer
-	pDevice->CreateVertexBuffer(24 * sizeof(CUSTOMVERTEX),
-		0,
-		CUSTOMFVF,
-		D3DPOOL_MANAGED,
-		&v_buffer,
-		NULL);
-
-	VOID* pVoid;    // a void pointer
-
-					// lock v_buffer and load the vertices into it
-	v_buffer->Lock(0, 0, (void**)&pVoid, 0);
-	memcpy(pVoid, vertices, sizeof(vertices));
-	v_buffer->Unlock();
-
-	// create the indices using an int array
-	short indices[] =
-	{
-		0, 1, 2,    // side 1
-		2, 1, 3,
-		4, 5, 6,    // side 2
-		6, 5, 7,
-		8, 9, 10,    // side 3
-		10, 9, 11,
-		12, 13, 14,    // side 4
-		14, 13, 15,
-		16, 17, 18,    // side 5
-		18, 17, 19,
-		20, 21, 22,    // side 6
-		22, 21, 23,
-	};
-
-	// create an index buffer interface called i_buffer
-	pDevice->CreateIndexBuffer(36 * sizeof(short),
-		0,
-		D3DFMT_INDEX16,
-		D3DPOOL_MANAGED,
-		&i_buffer,
-		NULL);
-
-	// lock i_buffer and load the indices into it
-	i_buffer->Lock(0, 0, (void**)&pVoid, 0);
-	memcpy(pVoid, indices, sizeof(indices));
-	i_buffer->Unlock();
-
-
-	HRESULT hr = D3D_OK;
-
-	hr = D3DXCreateTextureFromFile(pDevice, L"brown-paper.bmp", &g_texture);
-}
-
 void Renderer::InitializeLightAndMaterials()
 {
 	D3DLIGHT9 light;    // create the light struct
@@ -142,6 +56,37 @@ void Renderer::InitializeLightAndMaterials()
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));
+}
+
+void Renderer::AddVertexes(CUSTOMVERTEX * vertexes, int vertexesNumb)
+{
+	pDevice->CreateVertexBuffer(vertexesNumb * sizeof(CUSTOMVERTEX), 0, CUSTOMFVF, D3DPOOL_MANAGED, &v_buffer, NULL);
+
+	VOID* pVoid;
+
+	v_buffer->Lock(0, 0, (void**)&pVoid, 0);
+	memcpy(pVoid, vertexes, sizeof(CUSTOMVERTEX) * vertexesNumb);
+	v_buffer->Unlock();
+}
+
+void Renderer::AddIndexes(short * indexes, int indexesNumb)
+{
+	pDevice->CreateIndexBuffer(indexesNumb * sizeof(short), 0, D3DFMT_INDEX16, D3DPOOL_MANAGED, &i_buffer, NULL);
+	
+	VOID* pVoid;
+	
+	i_buffer->Lock(0, 0, (void**)&pVoid, 0);
+	memcpy(pVoid, indexes, sizeof(short) * indexesNumb);
+	i_buffer->Unlock();	
+}
+
+void Renderer::CreateTexture(wchar_t * fileName)
+{
+	HRESULT hr = D3D_OK;
+
+	hr = D3DXCreateTextureFromFile(pDevice, fileName, &g_texture);
+
+	
 }
 
 void Renderer::BeginScene()

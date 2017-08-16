@@ -44,13 +44,13 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
 	renderer = new Renderer();
 	renderer->Initialize(hWnd);
-	renderer->InitializeGeometry();
-	renderer->InitializeLightAndMaterials();
 
-	objectFactory = new ObjectFactory();
+	objectFactory = new ObjectFactory(renderer);
 
 	scene = new Scene();
 	scene->Initialize(objectFactory);
+
+	renderer->InitializeLightAndMaterials();
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));

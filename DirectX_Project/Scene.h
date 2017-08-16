@@ -11,6 +11,8 @@ public:
 	Scene();
 
 	void Initialize(ObjectFactory *of);
+	
+	
 	void Destroy();
 
 	~Scene();

@@ -11,7 +11,9 @@ void Scene::Initialize(ObjectFactory *of)
 		throw - 1;
 	}
 
-	GameObject *cube = new GameObject();
+	objectFactory = of;
+
+	GameObject *cube = objectFactory->CreateCube();
 
 	objects.push_back(cube);
 }

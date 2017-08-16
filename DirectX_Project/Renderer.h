@@ -3,7 +3,6 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -20,8 +19,12 @@ public:
 	Renderer();
 
 	void Initialize(HWND hWnd);	
-	void InitializeGeometry();
 	void InitializeLightAndMaterials();
+
+	void AddVertexes(CUSTOMVERTEX *vertexes, int vertexesNumb);
+	void AddIndexes(short *indexes, int indexesNumb);
+
+	void CreateTexture(wchar_t *fileName);
 
 	void BeginScene();
 	void Draw();
