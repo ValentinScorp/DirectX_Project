@@ -69,15 +69,43 @@ void Renderer::AddVertexes(CUSTOMVERTEX * vertexes, int vertexesNumb)
 	v_buffer->Unlock();
 }
 
-void Renderer::AddIndexes(short * indexes, int indexesNumb)
+void Renderer::AddIndexes(int * indexes, int indexesNumb)
 {
-	pDevice->CreateIndexBuffer(indexesNumb * sizeof(short), 0, D3DFMT_INDEX16, D3DPOOL_MANAGED, &i_buffer, NULL);
+	pDevice->CreateIndexBuffer(indexesNumb * sizeof(int), 0, D3DFMT_INDEX32, D3DPOOL_MANAGED, &i_buffer, NULL);
 	
 	VOID* pVoid;
 	
 	i_buffer->Lock(0, 0, (void**)&pVoid, 0);
-	memcpy(pVoid, indexes, sizeof(short) * indexesNumb);
+	memcpy(pVoid, indexes, sizeof(int) * indexesNumb);
 	i_buffer->Unlock();	
+}
+
+void Renderer::SendData(std::vector<GameObject*> &objects)
+{
+	graph_objects = &objects;
+
+	int vertexNum = 0;
+	int indexNum = 0;
+	for (int i = 0; i < objects.size(); i++) {
+		GameObject *obj = objects[i];
+		vertexNum = vertexNum + obj->GetVertexNum();
+		indexNum = indexNum + obj->GetIndexNum();		
+	}
+
+	std::vector<VertexData> vert;
+	std::vector<int> ind;
+	for (int i = 0; i < objects.size(); i++) {
+		GameObject *obj = objects[i];
+		for (int j = 0; j < obj->GetVertexNum(); j++) {
+			vert.push_back(obj->vertexes[j]);
+		}		
+		for (int j = 0; j < obj->GetIndexNum(); j++) {
+			ind.push_back(obj->indexes[j]);
+		}
+	}
+		
+	AddVertexes((CUSTOMVERTEX*)&vert[0], vertexNum);
+	AddIndexes((int*)&ind[0], indexNum);
 }
 
 void Renderer::CreateTexture(wchar_t * fileName)
@@ -112,24 +140,36 @@ void Renderer::Draw()
 	pDevice->SetTransform(D3DTS_PROJECTION, &matProjection);
 	// set the world transform
 
-	index += 0.03f;
-	D3DXMATRIX matRotateY;
-	D3DXMatrixRotationY(&matRotateY, index);
-	pDevice->SetTransform(D3DTS_WORLD, &(matRotateY));
-	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
-
 	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
 	pDevice->SetIndices(i_buffer);
 
-	// draw the cube
-	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24, 0, 12);
-	
-	D3DXMATRIX matrixMoveX;
-	D3DXMatrixTranslation(&matrixMoveX, 0.0f, 5.0f, 0.0f);
-	pDevice->SetTransform(D3DTS_WORLD, &(matrixMoveX));
-	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
+	index += 0.03f;
+	D3DXMATRIX matRotateY;
+	D3DXMATRIX matTransl;
+	//D3DXMatrixRotationY(&matRotateY, index);
+	//D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
+	int vertexNum = 0;
+	int indexNum = 0;
 
-	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24, 0, 12);
+	for (int i = 0; i < (*graph_objects).size(); i++) {
+		GameObject *go = (*graph_objects)[i];
+		D3DXMatrixTranslation(&matTransl, go->position.x, go->position.y, go->position.z);
+		//pDevice->SetTransform(D3DTS_WORLD, &(matRotateY));
+		pDevice->SetTransform(D3DTS_WORLD, &(matTransl));
+		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);		
+		
+		// draw the cube	
+		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, vertexNum, go->GetVertexNum(), indexNum, (go->GetIndexNum() /3));
+		vertexNum = vertexNum + go->GetVertexNum();
+		indexNum = indexNum + go->GetIndexNum();
+	}
+	
+//	D3DXMATRIX matrixMoveX;
+//	D3DXMatrixTranslation(&matrixMoveX, 0.0f, 5.0f, 0.0f);
+//	pDevice->SetTransform(D3DTS_WORLD, &(matrixMoveX));
+//	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
+
+	//pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24, 0, 12);
 }
 
 void Renderer::EndScene()

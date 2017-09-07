@@ -10,7 +10,7 @@ class Scene
 public:
 	Scene();
 
-	void Initialize(ObjectFactory *of);
+	void Initialize(Renderer *r, ObjectFactory *of);
 	
 	
 	void Destroy();
@@ -18,6 +18,7 @@ public:
 	~Scene();
 
 private:
+	Renderer *renderer = nullptr;
 	ObjectFactory *objectFactory = nullptr;
 	std::vector <GameObject*> objects;
 };

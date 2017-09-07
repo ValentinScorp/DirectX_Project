@@ -11,6 +11,8 @@ public:
 
 	GameObject* CreateCube();
 
+	GameObject* LoadObj();
+
 private:
 
 	Renderer *renderer = nullptr;

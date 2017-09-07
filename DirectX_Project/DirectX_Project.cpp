@@ -48,7 +48,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	objectFactory = new ObjectFactory(renderer);
 
 	scene = new Scene();
-	scene->Initialize(objectFactory);
+	scene->Initialize(renderer, objectFactory);
 
 	renderer->InitializeLightAndMaterials();
 
