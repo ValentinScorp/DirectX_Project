@@ -43,7 +43,9 @@ private:
 	IDirect3D9*			pDirect3D = nullptr;
 	IDirect3DDevice9*	pDevice = nullptr;
 
-	IDirect3DTexture9*	g_texture = nullptr;
+	//IDirect3DTexture9*	g_texture = nullptr;
+
+	std::vector<IDirect3DTexture9*> textures;
 
 	LPDIRECT3DVERTEXBUFFER9 v_buffer = NULL;
 	LPDIRECT3DINDEXBUFFER9 i_buffer = NULL;

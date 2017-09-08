@@ -24,6 +24,9 @@ public:
 	{
 
 	}
+	Vector3Df(float ix, float iy, float iz) {
+		x = ix; y = iy; z = iz;
+	}
 	~Vector3Df()
 	{
 
@@ -57,6 +60,9 @@ public:
 	Vector2Df()
 	{
 
+	}
+	Vector2Df(float ix, float iy) {
+		x = ix; y = iy;
 	}
 	~Vector2Df()
 	{

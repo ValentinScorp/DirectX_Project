@@ -14,19 +14,20 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	objectFactory = of;
 	renderer = r;
 
-	GameObject *cube = objectFactory->CreateCube();
-	GameObject *cubeObj = objectFactory->CreateCube();
+	//GameObject *cube = objectFactory->CreateCube();
+	GameObject *cubeObj = objectFactory->LoadObjFile("cube.obj");
+	GameObject *roman = objectFactory->LoadObjFile("roman02.obj");
+	roman->texture = L"roman_tex_high.png";
 	
-	objects.push_back(cube);
 	objects.push_back(cubeObj);
+	objects.push_back(roman);
 	
-	cube->position.x = 3.0f;
+	
 	cubeObj->position.x = -3.0f;
 
-	renderer->SendData(objects);
+	roman->position.z = 10.0f;
 
-	//renderer->AddVertexes((CUSTOMVERTEX*)cube->GetVertexes(), 24);
-	//renderer->AddIndexes(cube->GetIndexes(), 24);
+	renderer->SendData(objects);	
 }
 
 void Scene::Destroy()

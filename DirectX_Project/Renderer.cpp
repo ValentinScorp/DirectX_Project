@@ -16,6 +16,8 @@ void Renderer::Initialize(HWND hWnd)
 	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 	d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+	d3dpp.EnableAutoDepthStencil = TRUE;
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 
 	pDirect3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE, &d3dpp, &pDevice);
 }
@@ -51,11 +53,13 @@ void Renderer::InitializeLightAndMaterials()
 	material.Power = 5.0f;
 	pDevice->SetMaterial(&material);    // set the globably-used material to &material
 
-	pDevice->SetTexture(0, g_texture);
+	//pDevice->SetTexture(0, g_texture);
 
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));
+
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 void Renderer::AddVertexes(CUSTOMVERTEX * vertexes, int vertexesNumb)
@@ -102,19 +106,21 @@ void Renderer::SendData(std::vector<GameObject*> &objects)
 		for (int j = 0; j < obj->GetIndexNum(); j++) {
 			ind.push_back(obj->indexes[j]);
 		}
+		IDirect3DTexture9* tex = nullptr;
+		D3DXCreateTextureFromFile(pDevice, obj->texture.c_str(), &tex);
+		obj->textureId = textures.size();
+		textures.push_back(tex);
 	}
 		
 	AddVertexes((CUSTOMVERTEX*)&vert[0], vertexNum);
-	AddIndexes((int*)&ind[0], indexNum);
+	AddIndexes((int*)&ind[0], indexNum);	
 }
 
 void Renderer::CreateTexture(wchar_t * fileName)
 {
-	HRESULT hr = D3D_OK;
+	//HRESULT hr = D3D_OK;
 
-	hr = D3DXCreateTextureFromFile(pDevice, fileName, &g_texture);
-
-	
+	//hr = D3DXCreateTextureFromFile(pDevice, fileName, &g_texture);	
 }
 
 void Renderer::BeginScene()
@@ -146,8 +152,10 @@ void Renderer::Draw()
 	index += 0.03f;
 	D3DXMATRIX matRotateY;
 	D3DXMATRIX matTransl;
-	//D3DXMatrixRotationY(&matRotateY, index);
-	//D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
+	D3DXMATRIX matTransform;
+	D3DXMatrixIdentity(&matTransform);	
+	D3DXMatrixRotationY(&matRotateY, index);
+	D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;
 	int indexNum = 0;
 
@@ -155,11 +163,15 @@ void Renderer::Draw()
 		GameObject *go = (*graph_objects)[i];
 		D3DXMatrixTranslation(&matTransl, go->position.x, go->position.y, go->position.z);
 		//pDevice->SetTransform(D3DTS_WORLD, &(matRotateY));
-		pDevice->SetTransform(D3DTS_WORLD, &(matTransl));
+
+		matTransform = matRotateY * matTransl;
+
+		pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
 		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);		
 		
-		// draw the cube	
-		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, vertexNum, go->GetVertexNum(), indexNum, (go->GetIndexNum() /3));
+		pDevice->SetTexture(0, textures[go->textureId]);
+		
+		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexNum, 0, go->GetVertexNum(), indexNum, (go->GetIndexNum() /3));
 		vertexNum = vertexNum + go->GetVertexNum();
 		indexNum = indexNum + go->GetIndexNum();
 	}
@@ -188,10 +200,13 @@ void Renderer::Destroy()
 		i_buffer->Release();
 		i_buffer = NULL;
 	}
-	if (g_texture) {
-		g_texture->Release();
-		g_texture = NULL;
-	}
+
+	for (int i = 0; i < textures.size(); i++) {
+		if (textures[i]) {
+			textures[i]->Release();
+			textures[i] = NULL;
+		}
+	}	
 	if (pDevice) {
 		pDevice->Release();
 		pDevice = NULL;

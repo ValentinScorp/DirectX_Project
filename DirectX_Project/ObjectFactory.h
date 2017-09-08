@@ -11,7 +11,7 @@ public:
 
 	GameObject* CreateCube();
 
-	GameObject* LoadObj();
+	GameObject* LoadObjFile(std::string fileName);
 
 private:
 

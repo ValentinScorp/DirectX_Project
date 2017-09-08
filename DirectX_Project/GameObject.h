@@ -13,9 +13,12 @@ class GameObject
 {
 public:
 	Vector3Dd position;
+	Vector3Dd rotation;
 	
 	std::vector<VertexData> vertexes;	
 	std::vector<int> indexes;
+	std::wstring texture = L"default.png";
+	unsigned int textureId = 0;
 
 public:
 	GameObject();
