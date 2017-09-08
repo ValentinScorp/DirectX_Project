@@ -159,6 +159,14 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Vector3D.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="cube.obj" />
+    <Object Include="roman02.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="default.png" />
+    <Image Include="roman_tex_high.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

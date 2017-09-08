@@ -11,7 +11,7 @@
     </Filter>
     <Filter Include="Файлы ресурсов">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms;obj</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,5 +50,21 @@
     <ClInclude Include="Vector3D.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="cube.obj">
+      <Filter>Файлы ресурсов</Filter>
+    </Object>
+    <Object Include="roman02.obj">
+      <Filter>Файлы ресурсов</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="default.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="roman_tex_high.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
