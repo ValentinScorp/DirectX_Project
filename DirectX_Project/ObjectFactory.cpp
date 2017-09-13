@@ -184,3 +184,99 @@ GameObject * ObjectFactory::LoadObjFile(std::string fileName)
 		
 	return go;
 }
+
+GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
+{
+	GameObject *go = new GameObject();
+
+	std::ifstream inputFile(fileName, std::ios::in | std::ios::binary);
+	if (inputFile.fail()) {
+		//error("Open file error\n");
+	}
+
+	// узнаем размер файла
+	inputFile.seekg(0, std::ios::end);
+	long fileSize = inputFile.tellg();
+	inputFile.seekg(0, std::ios::beg);
+	// читаем данные из файла
+	unsigned char *data = new unsigned char[fileSize];
+	inputFile.read((char*)data, fileSize);
+	inputFile.close();
+	unsigned char *data_iterator = data;
+
+	char meshName[32] = " ";
+	memcpy(meshName, data_iterator, sizeof(char) * 32);
+	data_iterator += sizeof(char) * 32;
+		
+	// VERTISES
+	unsigned short vertexTotal = *(unsigned short*)data_iterator;	
+	data_iterator += sizeof(unsigned short);	
+	std::vector<Vector3Df> vertexes;	
+	if (vertexTotal) {	
+		for (int i = 0; i < (vertexTotal / 3); i++) {
+
+			float *x = (float*)data_iterator; data_iterator += sizeof(float);
+			float *y = (float*)data_iterator; data_iterator += sizeof(float);
+			float *z = (float*)data_iterator; data_iterator += sizeof(float);
+
+			Vector3Df v(*x, *y, *z);
+			
+			vertexes.push_back(v);
+		}
+	}
+
+	// NORMALS
+	unsigned short normalsTotal = *(unsigned short*)data_iterator;
+	data_iterator += sizeof(unsigned short);
+	std::vector<Vector3Df> normals;
+	if (normalsTotal) {
+		for (int i = 0; i < (normalsTotal / 3); i++) {
+
+			float *x = (float*)data_iterator; data_iterator += sizeof(float);
+			float *y = (float*)data_iterator; data_iterator += sizeof(float);
+			float *z = (float*)data_iterator; data_iterator += sizeof(float);
+
+			Vector3Df n(*x, *y, *z);
+
+			normals.push_back(n);
+		}
+	}
+
+	unsigned short uvTotal = *(unsigned short*)data_iterator;
+	data_iterator += sizeof(unsigned short);
+	std::vector<Vector2Df> texcoords;
+	if (uvTotal > 0 && uvTotal == (vertexTotal / 3) * 2) {
+		for (int i = 0; i < (uvTotal / 2); i++) {
+
+			float *s = (float*)data_iterator; data_iterator += sizeof(float);
+			float *t = (float*)data_iterator; data_iterator += sizeof(float);			
+
+			Vector2Df uv(*s, *t);
+			texcoords.push_back(uv);
+		}
+	}
+
+	data_iterator = nullptr;
+
+	if (vertexTotal != normalsTotal) {
+		delete go;
+		return nullptr;
+	}
+	
+	for (int i = 0; i < vertexes.size(); i++) {
+		VertexData vd;
+
+		vd.position.x = vertexes[i].x;
+		vd.position.y = vertexes[i].z;
+		vd.position.z = -vertexes[i].y;
+		vd.normal.x = normals[i].x;
+		vd.normal.y = normals[i].z;
+		vd.normal.z = -normals[i].y;
+		vd.uv = texcoords[i];
+
+		go->AddVertex(vd);
+		go->AddIndex(i);
+	}
+
+	return go;
+}

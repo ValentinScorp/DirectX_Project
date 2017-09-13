@@ -17,15 +17,23 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	//GameObject *cube = objectFactory->CreateCube();
 	GameObject *cubeObj = objectFactory->LoadObjFile("cube.obj");
 	GameObject *roman = objectFactory->LoadObjFile("roman02.obj");
+
+	GameObject *cubeSma = objectFactory->LoadSmaFile("cube.sma");
+
 	roman->texture = L"roman_tex_high.png";
+	cubeSma->texture = L"roman_tex_high.png";
 	
-	objects.push_back(cubeObj);
-	objects.push_back(roman);
-	
+	if (cubeObj != nullptr)
+		objects.push_back(cubeObj);
+	if (roman != nullptr)
+		objects.push_back(roman);	
+	if (cubeSma != nullptr)
+		objects.push_back(cubeSma);
 	
 	cubeObj->position.x = -3.0f;
-
 	roman->position.z = 10.0f;
+	cubeSma->position.z = 12.0f;
+	cubeSma->position.x = 3.0f;
 
 	renderer->SendData(objects);	
 }

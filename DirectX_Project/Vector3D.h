@@ -6,7 +6,7 @@ public:
 	Vector3Dd()
 	{
 
-	}
+	}	
 	~Vector3Dd()
 	{
 

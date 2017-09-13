@@ -67,4 +67,9 @@
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.sma">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+  </ItemGroup>
 </Project>
