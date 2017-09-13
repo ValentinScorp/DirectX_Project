@@ -71,5 +71,8 @@
     <None Include="cube.sma">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="export_bin_sma.py">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
 </Project>
