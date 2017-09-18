@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Renderer.h"
+#include "SmaLoader.h"
 
 class ObjectFactory
 {
@@ -13,9 +14,11 @@ public:
 
 	GameObject* LoadObjFile(std::string fileName);
 	GameObject* LoadSmaFile(std::string fileName);
+	GameObject* LoadSmaFile2(std::string fileName);
 
 private:
 
 	Renderer *renderer = nullptr;
+	SmaLoader smaLoader;
 };
 

@@ -270,8 +270,8 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 		vd.position.y = vertexes[i].z;
 		vd.position.z = -vertexes[i].y;
 		vd.normal.x = normals[i].x;
-		vd.normal.y = normals[i].z;
-		vd.normal.z = -normals[i].y;
+		vd.normal.y = normals[i].y;
+		vd.normal.z = -normals[i].z;
 		vd.uv = texcoords[i];
 
 		go->AddVertex(vd);
@@ -279,4 +279,9 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 	}
 
 	return go;
+}
+
+GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
+{
+
 }
