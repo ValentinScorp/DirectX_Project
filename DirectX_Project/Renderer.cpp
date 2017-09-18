@@ -136,7 +136,7 @@ void Renderer::Draw()
 
 	D3DXMATRIX matView;
 	D3DXMatrixLookAtLH(&matView,
-		&D3DXVECTOR3(0.0f, 8.0f, 25.0f),    // the camera position
+		&D3DXVECTOR3(0.0f, -25.0f, 8.0f),    // the camera position
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),     // the look-at position
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
 	pDevice->SetTransform(D3DTS_VIEW, &matView);
@@ -150,11 +150,11 @@ void Renderer::Draw()
 	pDevice->SetIndices(i_buffer);
 
 	index += 0.03f;
-	D3DXMATRIX matRotateY;
+	D3DXMATRIX matRotateZ;
 	D3DXMATRIX matTransl;
 	D3DXMATRIX matTransform;
 	D3DXMatrixIdentity(&matTransform);	
-	D3DXMatrixRotationY(&matRotateY, index);
+	D3DXMatrixRotationZ(&matRotateZ, index);
 	D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;
 	int indexNum = 0;
@@ -164,7 +164,7 @@ void Renderer::Draw()
 		D3DXMatrixTranslation(&matTransl, go->position.x, go->position.y, go->position.z);
 		//pDevice->SetTransform(D3DTS_WORLD, &(matRotateY));
 
-		matTransform = matRotateY * matTransl;
+		matTransform = matRotateZ * matTransl;
 
 		pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
 		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);		

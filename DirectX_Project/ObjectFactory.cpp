@@ -256,10 +256,11 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 		}
 	}
 
+	delete [] data;
 	data_iterator = nullptr;
 
 	if (vertexTotal != normalsTotal) {
-		delete go;
+		delete go;		
 		return nullptr;
 	}
 	
@@ -281,7 +282,7 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 	return go;
 }
 
-GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
+GameObject * ObjectFactory::LoadSmaFile2(std::string fileName)
 {
-
+	return smaLoader.load(fileName);
 }
