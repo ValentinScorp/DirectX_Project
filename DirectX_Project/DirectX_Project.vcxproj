@@ -146,18 +146,24 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Bone.cpp" />
     <ClCompile Include="DirectX_Project.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ObjectFactory.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="SmaLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="Bone.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Skeleton.h" />
     <ClInclude Include="SmaLoader.h" />
     <ClInclude Include="sma_spec.h" />
     <ClInclude Include="Vector3D.h" />

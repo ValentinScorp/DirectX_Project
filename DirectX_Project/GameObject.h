@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Vector3D.h"
+#include "Bone.h"
+#include "Skeleton.h"
+#include "Animation.h"
+
 #include <vector>
 
 struct VertexData {
@@ -9,16 +13,24 @@ struct VertexData {
 	Vector2Df uv;
 };
 
+
+
+
 class GameObject
 {
 public:
 	Vector3Dd position;
 	Vector3Dd rotation;
 	
+	std::vector<Vector3Df> vertPositionsInit;
 	std::vector<VertexData> vertexes;	
 	std::vector<int> indexes;
 	std::wstring texture = L"default.png";
 	unsigned int textureId = 0;
+
+	Skeleton skeleton;
+	std::vector<Animation*> animations;
+	std::vector<std::vector<Weight>> vertexWeights;
 
 public:
 	GameObject();
@@ -42,5 +54,5 @@ public:
 		return vertexes.size();
 	}
 
-		
+	void animate();
 };
