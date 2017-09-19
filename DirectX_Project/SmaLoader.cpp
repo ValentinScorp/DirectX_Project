@@ -1,4 +1,9 @@
 #include "SmaLoader.h"
+#include "Bone.h"
+#include "Skeleton.h"
+#include "Vector3D.h"
+#include "Animation.h"
+
 #include <codecvt>
 
 SmaLoader::SmaLoader()
@@ -120,6 +125,96 @@ GameObject* SmaLoader::load(std::string file)
 		}		
 	}
 	
+	// skeleton
+	unsigned short numBones = *(unsigned short*)data_iterator;
+	data_iterator += sizeof(unsigned short);
+
+	go->skeleton.bones.reserve(numBones);
+	for (int i = 0; i < numBones; i++) {
+		
+		Bone* bone = new Bone();
+
+		short parentIdx = *(unsigned short*)data_iterator;
+		data_iterator += sizeof(unsigned short);
+		
+		if (parentIdx >= 0) {
+			bone->parent = go->skeleton.bones[parentIdx];
+		}
+
+		bone->rotation.x = *(float*)data_iterator; data_iterator += sizeof(float);
+		bone->rotation.y = *(float*)data_iterator; data_iterator += sizeof(float);
+		bone->rotation.z = *(float*)data_iterator; data_iterator += sizeof(float);
+
+		bone->position.x = *(float*)data_iterator; data_iterator += sizeof(float);
+		bone->position.y = *(float*)data_iterator; data_iterator += sizeof(float);
+		bone->position.z = *(float*)data_iterator; data_iterator += sizeof(float);
+
+		go->skeleton.addBone(bone);
+	}
+
+	// vertex weights
+	unsigned short numVertWeights = *(unsigned short*)data_iterator;
+	data_iterator += sizeof(unsigned short);
+
+	for (int i = 0; i < numVertWeights; i++) {
+		unsigned short numWeights = *(unsigned short*)data_iterator;
+		data_iterator += sizeof(unsigned short);
+
+		std::vector<Weight> vertexWeights;
+		for (int j = 0; j < numWeights; j++) {			
+			short boneIndex = *(unsigned short*)data_iterator;
+			data_iterator += sizeof(unsigned short);
+
+			float weight = *(float*)data_iterator;
+			data_iterator += sizeof(float);
+
+			Weight w;
+			if (boneIndex >= 0 && boneIndex < go->skeleton.bones.size()) {
+				w.bone = go->skeleton.bones[boneIndex];
+			} 
+			w.weight = weight;
+			vertexWeights.push_back(w);
+		}
+		go->vertexWeights.push_back(vertexWeights);
+	}
+	// animation
+	unsigned short numAnimations = *(unsigned short*)data_iterator;
+	data_iterator += sizeof(unsigned short);
+	for (int i = 0; i < numAnimations; i++)	{
+		Animation *animation = new Animation();
+		char animName[64] = "None";
+		memcpy(animName, data_iterator, sizeof(char) * 64);
+		data_iterator += sizeof(char) * 64;
+
+		animation->name = animName;
+
+		unsigned short numKeyframes = *(unsigned short*)data_iterator;
+		data_iterator += sizeof(unsigned short);
+		
+		for (int j = 0; j < numKeyframes; j++) {
+			Keyframe kf;
+			unsigned short keyframeIndex = *(unsigned short*)data_iterator;
+			data_iterator += sizeof(unsigned short);
+
+			kf.index = keyframeIndex;
+			for (int k = 0; k < numBones; k++) {
+				Vector3Df rotation;
+				Vector3Df position;
+				rotation.x = *(float*)data_iterator; data_iterator += sizeof(float);
+				rotation.y = *(float*)data_iterator; data_iterator += sizeof(float);
+				rotation.z = *(float*)data_iterator; data_iterator += sizeof(float);
+				position.x = *(float*)data_iterator; data_iterator += sizeof(float);
+				position.y = *(float*)data_iterator; data_iterator += sizeof(float);
+				position.z = *(float*)data_iterator; data_iterator += sizeof(float);
+
+				kf.rotations.push_back(rotation);
+				kf.positions.push_back(position);
+			}
+			animation->keyframes.push_back(kf);
+		}
+		
+		go->animations.push_back(animation);
+	}
 
 	delete[] data;
 	data_iterator = nullptr;
@@ -142,6 +237,8 @@ GameObject* SmaLoader::load(std::string file)
 
 		go->AddVertex(vd);
 		go->AddIndex(i);
+
+		go->vertPositionsInit.push_back(vertexes[i]);
 	}
 
 	return go;

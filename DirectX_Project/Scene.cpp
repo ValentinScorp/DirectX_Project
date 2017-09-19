@@ -15,7 +15,7 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	renderer = r;
 
 	//GameObject *cube = objectFactory->CreateCube();
-	GameObject *cubeObj = objectFactory->LoadObjFile("cube.obj");
+	//GameObject *cubeObj = objectFactory->LoadObjFile("cube.obj");
 	//GameObject *roman = objectFactory->LoadObjFile("roman02.obj");
 
 	//GameObject *cubeSma = objectFactory->LoadSmaFile("cube.sma");
@@ -25,8 +25,8 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	//roman->texture = L"roman_tex_high.png";
 	//cubeSma->texture = L"roman_tex_high.png";
 	
-	if (cubeObj != nullptr)
-		objects.push_back(cubeObj);
+	//if (cubeObj != nullptr)
+	//	objects.push_back(cubeObj);
 	//if (roman != nullptr)
 	//	objects.push_back(roman);	
 	//if (cubeSma != nullptr)
@@ -34,7 +34,7 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	if (smaMan != nullptr)
 		objects.push_back(smaMan);
 
-	cubeObj->position.x = -3.0f;
+	//cubeObj->position.x = -3.0f;
 	//roman->position.z = 10.0f;
 	//cubeSma->position.z = 12.0f;
 	//cubeSma->position.x = 3.0f;

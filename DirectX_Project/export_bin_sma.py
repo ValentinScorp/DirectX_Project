@@ -26,7 +26,7 @@ class VertexWeights():
         out_file.write(pack('<H', len(self.vertex_weights))) 
 #        print("vertex weights", len(self.vertex_weights))
         for vw in self.vertex_weights:
-            out_file.write(pack('<H', vw.index))
+            out_file.write(pack('<h', vw.index))
             out_file.write(pack('<f', vw.weight))
             #print('index', vw.index, 'weight', vw.weight)
 
@@ -64,9 +64,10 @@ class Textures():
                 out_file.write(pack('<H', i))
         
 class Bone():
-    __slots__ = ('parent_idx', 'rot_x', 'rot_y', 'rot_z', 'pos_x', 'pos_y', 'pos_z')
-    def __init__(self, pi = 0, rx = 0,ry = 0,rz = 0, px = 0, py = 0, pz = 0):
+    __slots__ = ('parent_idx', 'name', 'rot_x', 'rot_y', 'rot_z', 'pos_x', 'pos_y', 'pos_z')
+    def __init__(self, pi = 0, n = ' ', rx = 0,ry = 0,rz = 0, px = 0, py = 0, pz = 0):
         self.parent_idx = pi
+        self.name = n
         self.rot_x = rx
         self.rot_y = ry
         self.rot_z = rz
@@ -95,12 +96,12 @@ class Keyframe():
 class Animation():
     __slots__ = ('name', 'numKeyframes', 'keyframe')
     def __init__(self):
-        name = 'None'
-        numKeyframes = 0
-        keyframe = []
+        self.name = 'None'
+        self.numKeyframes = 0
+        self.keyframe = []
     
     def addKeyframe(self, kf):
-        keyframe.append(kf)
+        self.keyframe.append(kf)
 
 class SmaModel():
     __slots__ = ('name', 'vertices', 'normals', 'texcoords', 'textures', 'vertex_weights', 'bones', 'animations')
@@ -147,6 +148,14 @@ class SmaModel():
     def addAnimations(self, anims):
         for a in anims:
             self.animations.append(a)
+        
+    def getBoneIndex(self, bname):
+        index = 0
+        for b in self.bones:
+            if b.name == bname:
+                return index
+            index += 1
+        return -1;
             
     def print(self):
         print(self.name)
@@ -200,10 +209,6 @@ class SmaModel():
                 
                 self.textures.write(out_file)
                     
-                out_file.write(pack('<H', len(self.vertex_weights)))  
-                for vert_w in self.vertex_weights:                     
-                    vert_w.write(out_file)
-                    
                 print('Saving bones')
                 out_file.write(pack('<H', len(self.bones)))
                 for bone in self.bones:
@@ -214,7 +219,35 @@ class SmaModel():
                     out_file.write(pack('<f', bone.pos_x))
                     out_file.write(pack('<f', bone.pos_y))
                     out_file.write(pack('<f', bone.pos_z))
-
+                
+                out_file.write(pack('<H', len(self.vertex_weights)))  
+                for vert_w in self.vertex_weights:                     
+                    vert_w.write(out_file)
+                
+                out_file.write(pack('<H', len(self.animations))) 
+                for a in self.animations:
+                    abuffer = a.name.encode(encoding='UTF-8', errors='strict')
+                    if not abuffer:
+                        abuffer = bytes()
+                    out_file.write(pack('<{}s'.format(64), abuffer))
+                    out_file.write(pack('<H', a.numKeyframes))
+                    print("Num keyframes", a.numKeyframes)
+                   # print(a.name)
+                    for kf in a.keyframe:
+                        print("kf index", kf.index)
+                        out_file.write(pack('<H', kf.index))
+                        idx = 0
+                        for rot in kf.rotations:
+                            out_file.write(pack('<f', kf.rotations[idx].x))
+                            out_file.write(pack('<f', kf.rotations[idx].y))
+                            out_file.write(pack('<f', kf.rotations[idx].z))
+                            out_file.write(pack('<f', kf.positions[idx].x))
+                            out_file.write(pack('<f', kf.positions[idx].y))
+                            out_file.write(pack('<f', kf.positions[idx].z))
+                            #print(idx)
+                            idx += 1
+                        
+                
                 out_file.flush()
                 out_file.close()
         finally:
@@ -304,25 +337,7 @@ armature = armatures[0]
 #print('Armature name = ', armature.name)
 #print('Armature location = ', armature.location)
 #print('Armature rotation = ', armature.rotation_euler)
-
-print('==================== weights ===================')
-
-arm = bpy.data.objects[armature.name]
-obj = bpy.data.objects[sma.name]
-
-obj_verts = obj.data.vertices
-obj_group_names = [g.name for g in obj.vertex_groups]
-
-vertex_weights = []
-for v in obj_verts:
-    vertex_w = VertexWeights()
-    for vgroup in v.groups:
-       # print('Vertex',v.index,'has a weight of',vgroup.weight,'for bone',vgroup.group)
-        vw = VertexWeight(vgroup.group, vgroup.weight)        
-        vertex_w.addVW(vw)
-    vertex_weights.append(vertex_w)
-sma.addVertexWeight(vertex_weights)        
-      
+        
 print('==================== bones ===================')  
 
 myBones = []
@@ -337,10 +352,35 @@ for bone in armature.data.bones:
         if b == bone.parent:
             index = counter
         counter += 1
-#    myBone = Bone(index, rot.x, rot.y, rot.z, loc.x, loc.y, loc.z)
-    myBones.append(Bone(index, rot.x, rot.y, rot.z, loc.x, loc.y, loc.z))    
+    myBones.append(Bone(index, bone.name, rot.x, rot.y, rot.z, loc.x, loc.y, loc.z))    
+   
 
 sma.addBones(myBones)
+
+print('==================== weights ===================')
+
+arm = bpy.data.objects[armature.name]
+obj = bpy.data.objects[sma.name]
+
+obj_verts = obj.data.vertices
+obj_group_names = [g.name for g in obj.vertex_groups]
+
+vertex_weights = []
+for v in obj_verts:
+    vertex_w = VertexWeights()
+    for vgroup in v.groups:      
+        #print('Vertex',v.index,'has a weight of',vgroup.weight,'for bone',vgroup.group)      
+        vw = VertexWeight(sma.getBoneIndex(obj_group_names[vgroup.group]), vgroup.weight)        
+        #print(sma.getBoneIndex(obj_group_names[vgroup.group]))
+        vertex_w.addVW(vw)
+    vertex_weights.append(vertex_w)
+        
+final_weights = []
+for f in bm.faces:
+    for v in f.verts:
+        final_weights.append(vertex_weights[v.index])
+
+sma.addVertexWeight(final_weights)
 
 print('==================== animation ===================')  
 
@@ -349,15 +389,18 @@ for mesh in [obj for obj in bpy.data.objects if obj.type == 'MESH']:
     for action in bpy.data.actions:
         animation = Animation()
         animation.name = action.name
-#        print(action.name)
+        #print(action.name)
         mesh.animation_data.action = action
         frame_begin, frame_end = [int(x) for x in action.frame_range]
-        for frame in range(frame_begin, frame_end + 1):
+        index = 0
+        for frame in range(frame_begin, frame_end + 1):            
             bpy.context.scene.frame_set(frame)
             keyframe = Keyframe()
             keyframe.index = int(frame)
             #print("Frame %i" % frame)
             for pbone in armature.pose.bones:
+               # print(index)
+                index += 1
                 #print(pbone.name, pbone.matrix)
                 mat = pbone.matrix
                 loc, rot, scale = pbone.matrix.decompose()    
@@ -368,7 +411,11 @@ for mesh in [obj for obj in bpy.data.objects if obj.type == 'MESH']:
                 keyframe.addPosition(loc)
 			#	loc, rot, scale = mat.decompose() 
                 #export_pose(armature_object.pose.bones)
-        animation.numKeyframes = frame_end        
+                
+            animation.addKeyframe(keyframe)
+            index = 0
+                            
+        animation.numKeyframes = len(animation.keyframe)        
         animations.append(animation)
 
 sma.addAnimations(animations)    
