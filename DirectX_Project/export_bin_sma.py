@@ -74,7 +74,12 @@ class Bone():
         self.pos_x = px
         self.pos_y = py
         self.pos_z = pz
-
+        
+    def print(self):
+        print(self.name)
+        print('Rotation', self.rot_x, self.rot_y, self.rot_z)
+        print('Position', self.pos_x, self.pos_y, self.pos_z)
+ 
 class Vector3f():
     __slots__ = ('x', 'y', 'z')
     def __init__(self, ix = 0, iy = 0, iz = 0):
@@ -219,6 +224,7 @@ class SmaModel():
                     out_file.write(pack('<f', bone.pos_x))
                     out_file.write(pack('<f', bone.pos_y))
                     out_file.write(pack('<f', bone.pos_z))
+                    #bone.print()
                 
                 out_file.write(pack('<H', len(self.vertex_weights)))  
                 for vert_w in self.vertex_weights:                     
@@ -231,10 +237,10 @@ class SmaModel():
                         abuffer = bytes()
                     out_file.write(pack('<{}s'.format(64), abuffer))
                     out_file.write(pack('<H', a.numKeyframes))
-                    print("Num keyframes", a.numKeyframes)
+                    #print("Num keyframes", a.numKeyframes)
                    # print(a.name)
                     for kf in a.keyframe:
-                        print("kf index", kf.index)
+                        #print("kf index", kf.index)
                         out_file.write(pack('<H', kf.index))
                         idx = 0
                         for rot in kf.rotations:
@@ -259,7 +265,6 @@ meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
 me = meshes[0].data
 bm = bmesh.new()
 bm.from_mesh(me)
-bmesh.ops.triangulate(bm, faces=bm.faces)
 bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
 
 sma = SmaModel(bpy.context.object.name)
@@ -341,36 +346,47 @@ armature = armatures[0]
 print('==================== bones ===================')  
 
 myBones = []
-for bone in armature.data.bones:    
+for bone in armature.data.bones:   
+    print(bone.name) 
+    print(bone.matrix_local)
     loc, rot, scale = bone.matrix_local.decompose()    
     loc += armature.location
-    rot = rot.to_euler()    
-        
+    #print('arma loc', armature.location)
+    rot = rot.to_euler() 
+
     index = -1
     counter = 0
     for b in armature.data.bones:
         if b == bone.parent:
             index = counter
-        counter += 1
-    myBones.append(Bone(index, bone.name, rot.x, rot.y, rot.z, loc.x, loc.y, loc.z))    
-   
+        counter += 1  
+    b = Bone(index, bone.name, rot.x, rot.y, rot.z, loc.x, loc.y, loc.z)
+    myBones.append(b)    
 
 sma.addBones(myBones)
 
 print('==================== weights ===================')
 
-arm = bpy.data.objects[armature.name]
+#arm = bpy.data.objects[armature.name]
 obj = bpy.data.objects[sma.name]
 
 obj_verts = obj.data.vertices
 obj_group_names = [g.name for g in obj.vertex_groups]
-
+#print(obj_group_names)
 vertex_weights = []
 for v in obj_verts:
     vertex_w = VertexWeights()
+    weight_sum = 0
+    for vgroup in v.groups:
+        weight_sum += vgroup.weight
+    if weight_sum < 0:
+        normalize_koef = 1
+    else:
+        normalize_koef = 1 / weight_sum    
+   # print(normalize_koef)
     for vgroup in v.groups:      
-        #print('Vertex',v.index,'has a weight of',vgroup.weight,'for bone',vgroup.group)      
-        vw = VertexWeight(sma.getBoneIndex(obj_group_names[vgroup.group]), vgroup.weight)        
+        print('Vertex',v.index,'has a weight of',vgroup.weight * normalize_koef,'for bone',vgroup.group)     
+        vw = VertexWeight(sma.getBoneIndex(obj_group_names[vgroup.group]), vgroup.weight * normalize_koef)        
         #print(sma.getBoneIndex(obj_group_names[vgroup.group]))
         vertex_w.addVW(vw)
     vertex_weights.append(vertex_w)
@@ -392,18 +408,16 @@ for mesh in [obj for obj in bpy.data.objects if obj.type == 'MESH']:
         #print(action.name)
         mesh.animation_data.action = action
         frame_begin, frame_end = [int(x) for x in action.frame_range]
-        index = 0
         for frame in range(frame_begin, frame_end + 1):            
             bpy.context.scene.frame_set(frame)
             keyframe = Keyframe()
             keyframe.index = int(frame)
             #print("Frame %i" % frame)
             for pbone in armature.pose.bones:
-               # print(index)
-                index += 1
                 #print(pbone.name, pbone.matrix)
                 mat = pbone.matrix
                 loc, rot, scale = pbone.matrix.decompose()    
+                #print(armature.location)
                 loc += armature.location
                 rot = rot.to_euler()            
 
@@ -413,7 +427,6 @@ for mesh in [obj for obj in bpy.data.objects if obj.type == 'MESH']:
                 #export_pose(armature_object.pose.bones)
                 
             animation.addKeyframe(keyframe)
-            index = 0
                             
         animation.numKeyframes = len(animation.keyframe)        
         animations.append(animation)

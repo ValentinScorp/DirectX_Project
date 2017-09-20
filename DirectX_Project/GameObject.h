@@ -32,6 +32,9 @@ public:
 	std::vector<Animation*> animations;
 	std::vector<std::vector<Weight>> vertexWeights;
 
+	int animationFrame;
+	float animationSpeed;
+
 public:
 	GameObject();
 	~GameObject();

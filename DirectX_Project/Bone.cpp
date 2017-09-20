@@ -21,6 +21,7 @@ D3DXMATRIX Bone::GetLocalToWorldMatrix()
 						 // Using the left-to-right order of matrix concatenation,
 						 // apply the translation to the object's world position
 						 // before applying the rotations.
+	D3DXMatrixIdentity(&FinalMat);
 	D3DXMatrixTranslation(&FinalMat, position.x, position.y, position.z);
 	D3DXMatrixIdentity(&MatRot);
 
@@ -32,7 +33,7 @@ D3DXMATRIX Bone::GetLocalToWorldMatrix()
 	D3DXMatrixRotationY(&MatTemp, rotation.y);           // Yaw
 	D3DXMatrixMultiply(&MatRot, &MatRot, &MatTemp);
 	D3DXMatrixRotationZ(&MatTemp, rotation.z);          // Roll
-	D3DXMatrixMultiply(&MatRot, &MatRot, &MatTemp);
+	D3DXMatrixMultiply(&MatRot, &MatRot, &MatTemp);	
 
 	// Apply the rotation matrices to complete the world matrix.
 	D3DXMatrixMultiply(&FinalMat, &MatRot, &FinalMat);	
