@@ -12,6 +12,7 @@ public:
 
 	D3DXMATRIX GetLocalToWorldMatrix();
 
+	int parentIndex;
 	Bone *parent;
 	Vector3Df position;
 	Vector3Df rotation;

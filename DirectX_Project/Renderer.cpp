@@ -151,7 +151,7 @@ void Renderer::Draw()
 	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
 	pDevice->SetIndices(i_buffer);
 
-	index += 0.03f;
+	index += 0.01f;
 	D3DXMATRIX matRotateZ;
 	D3DXMATRIX matTransl;
 	D3DXMATRIX matTransform;

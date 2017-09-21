@@ -137,9 +137,7 @@ GameObject* SmaLoader::load(std::string file)
 		short parentIdx = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
 		
-		if (parentIdx >= 0) {
-			bone->parent = go->skeleton.bones[parentIdx];
-		}
+		bone->parentIndex = parentIdx;		
 
 		bone->rotation.x = *(float*)data_iterator; data_iterator += sizeof(float);
 		bone->rotation.y = *(float*)data_iterator; data_iterator += sizeof(float);
@@ -150,6 +148,12 @@ GameObject* SmaLoader::load(std::string file)
 		bone->position.z = *(float*)data_iterator; data_iterator += sizeof(float);
 
 		go->skeleton.addBone(bone);
+	}
+	for (int i = 0; i < go->skeleton.bones.size(); i++) {
+		Bone* bone = go->skeleton.bones[i];
+		if (bone->parentIndex >= 0) {
+			bone->parent = bone;
+		}
 	}
 
 	// vertex weights

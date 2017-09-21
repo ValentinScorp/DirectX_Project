@@ -4,6 +4,7 @@
 Bone::Bone()
 {
 	parent = nullptr;
+	parentIndex = -1;
 }
 
 

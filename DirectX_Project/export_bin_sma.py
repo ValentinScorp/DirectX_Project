@@ -345,10 +345,11 @@ armature = armatures[0]
         
 print('==================== bones ===================')  
 
+deformBoneNames = []
 myBones = []
 for bone in armature.data.bones:   
-    print(bone.name) 
-    print(bone.matrix_local)
+    #print(bone.name) 
+    #print(bone.matrix_local)
     loc, rot, scale = bone.matrix_local.decompose()    
     loc += armature.location
     #print('arma loc', armature.location)
@@ -361,8 +362,11 @@ for bone in armature.data.bones:
             index = counter
         counter += 1  
     b = Bone(index, bone.name, rot.x, rot.y, rot.z, loc.x, loc.y, loc.z)
-    myBones.append(b)    
-
+    if bone.use_deform == True:
+        print(bone.name)
+        myBones.append(b)    
+    else:
+        deformBoneNames.append(bone.name)
 sma.addBones(myBones)
 
 print('==================== weights ===================')
@@ -405,14 +409,14 @@ for mesh in [obj for obj in bpy.data.objects if obj.type == 'MESH']:
     for action in bpy.data.actions:
         animation = Animation()
         animation.name = action.name
-        #print(action.name)
+        print(action.name)
         mesh.animation_data.action = action
         frame_begin, frame_end = [int(x) for x in action.frame_range]
         for frame in range(frame_begin, frame_end + 1):            
             bpy.context.scene.frame_set(frame)
             keyframe = Keyframe()
             keyframe.index = int(frame)
-            #print("Frame %i" % frame)
+            print("Frame %i" % frame)
             for pbone in armature.pose.bones:
                 #print(pbone.name, pbone.matrix)
                 mat = pbone.matrix
@@ -420,9 +424,13 @@ for mesh in [obj for obj in bpy.data.objects if obj.type == 'MESH']:
                 #print(armature.location)
                 loc += armature.location
                 rot = rot.to_euler()            
-
-                keyframe.addRotation(rot)
-                keyframe.addPosition(loc)
+                
+                
+                print(rot)
+                print(loc)
+                if pbone.name not in deformBoneNames:
+                    keyframe.addRotation(rot)
+                    keyframe.addPosition(loc)
 			#	loc, rot, scale = mat.decompose() 
                 #export_pose(armature_object.pose.bones)
                 

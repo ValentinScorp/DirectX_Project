@@ -27,12 +27,12 @@ void GameObject::AddIndex(int i)
 
 void GameObject::animate()
 {
-	animationSpeed += 0.02;
+	animationSpeed += 0.4;
 	if (animationSpeed >= 1) {
 		animationSpeed = 0;
 		animationFrame++;
 	}
-	if (animationFrame >= 11) {
+	if (animationFrame >= 31) {
 		animationFrame = 0;
 	}
 
