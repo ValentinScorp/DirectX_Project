@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "GameObject.h"
+#include "UserInput.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -26,6 +27,7 @@ public:
 
 	void AddVertexes(CUSTOMVERTEX *vertexes, int vertexesNumb);
 	void AddIndexes(int *indexes, int indexesNumb);
+	void SetUserInput(UserInput *up);
 
 	void SendData(std::vector<GameObject*> &objects);
 
@@ -40,9 +42,11 @@ public:
 	~Renderer();
 
 private:
+	ID3DXFont*			font;
 	IDirect3D9*			pDirect3D = nullptr;
 	IDirect3DDevice9*	pDevice = nullptr;
 
+	UserInput*			userInput = nullptr;
 	//IDirect3DTexture9*	g_texture = nullptr;
 
 	std::vector<IDirect3DTexture9*> textures;
@@ -51,6 +55,8 @@ private:
 	LPDIRECT3DINDEXBUFFER9 i_buffer = NULL;
 	
 	std::vector <GameObject*> *graph_objects = nullptr;
+
+	D3DXVECTOR3 camPosition;
 
 	float index = 0.0f;
 };

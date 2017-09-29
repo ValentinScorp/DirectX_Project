@@ -20,6 +20,24 @@ void Renderer::Initialize(HWND hWnd)
 	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 	
 	pDirect3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE, &d3dpp, &pDevice);
+
+	// creating font
+	D3DXFONT_DESC fontDesc;
+	fontDesc.Height = 24;
+	fontDesc.Width = 0;
+	fontDesc.Weight = 0;
+	fontDesc.MipLevels = 1;
+	fontDesc.Italic = false;
+	fontDesc.CharSet = DEFAULT_CHARSET;
+	fontDesc.OutputPrecision = OUT_DEFAULT_PRECIS;
+	fontDesc.Quality = DEFAULT_QUALITY;
+	fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	wcscpy(fontDesc.FaceName, L"Times New Roman");
+	D3DXCreateFontIndirect(pDevice, &fontDesc, &font);
+		
+	camPosition.x = 0.0f;
+	camPosition.y = -25.0f;
+	camPosition.z = 8.0f;
 }
 
 void Renderer::InitializeLightAndMaterials()
@@ -84,6 +102,11 @@ void Renderer::AddIndexes(int * indexes, int indexesNumb)
 	i_buffer->Unlock();	
 }
 
+void Renderer::SetUserInput(UserInput * up)
+{
+	userInput = up;
+}
+
 void Renderer::SendData(std::vector<GameObject*> &objects)
 {
 	graph_objects = &objects;
@@ -136,11 +159,26 @@ void Renderer::Draw()
 {
 	pDevice->SetFVF(CUSTOMFVF);
 
+	// draw text
+	std::wstring wheelDelta = L"no text";
+	if (userInput != nullptr) {
+		userInput->BeginSearch();
+		UserMessage *um;
+		while (um = userInput->GetNextMessage()) {
+			if (um->delta != 0) {
+				wheelDelta = std::to_wstring(um->delta);
+				camPosition.z += (um->delta / 60);
+			}
+		}
+	}
+	RECT R = { 0, 0, 0, 0 };
+	font->DrawText(0, wheelDelta.c_str(), -1, &R, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 255));
+
 	D3DXMATRIX matView;
 	D3DXMatrixLookAtLH(&matView,
-		&D3DXVECTOR3(0.0f, -25.0f, 8.0f),    // the camera position
+		&camPosition,    // the camera position
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),     // the look-at position
-		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
+		&D3DXVECTOR3(0.0f, 0.0f, 1.0f));    // the up direction
 	pDevice->SetTransform(D3DTS_VIEW, &matView);
 
 	D3DXMATRIX matProjection;
@@ -200,6 +238,12 @@ void Renderer::EndScene()
 
 void Renderer::Destroy()
 {
+	if (font != NULL)
+	{
+		font->Release();
+		font = NULL;
+	}
+
 	if (v_buffer) {
 		v_buffer->Release();
 		v_buffer = NULL;

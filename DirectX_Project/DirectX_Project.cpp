@@ -5,6 +5,7 @@
 #include "ObjectFactory.h"
 #include "Renderer.h"
 #include "Scene.h"
+#include "UserInput.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -13,6 +14,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 Renderer *renderer = nullptr;
 Scene *scene = nullptr;
+UserInput *userInput = nullptr;
 
 ObjectFactory *objectFactory = nullptr;
 
@@ -42,8 +44,11 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
+	userInput = new UserInput();
+
 	renderer = new Renderer();
 	renderer->Initialize(hWnd);
+	renderer->SetUserInput(userInput);
 
 	objectFactory = new ObjectFactory(renderer);
 
@@ -63,6 +68,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 			renderer->BeginScene();
 			renderer->Draw();
 			renderer->EndScene();
+			userInput->ClearMessages();
 		}
 	}
 
@@ -82,6 +88,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 		renderer = nullptr;
 	}
 
+	if (userInput != nullptr) {
+		userInput->ClearMessages();
+		delete userInput;
+	}
 	UnregisterClass(L"My DirectX Project", hInstance);
 
     return (int) msg.wParam;
@@ -89,11 +99,31 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
-    {
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
+	short delta = 0;
+	switch (message)
+	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			PostQuitMessage(0);
+			break;
+		}
+		break;
+	case WM_MOUSEWHEEL:
+		delta = GET_WHEEL_DELTA_WPARAM(wParam);
+		// up rotation
+		if (delta > 0) {
+			userInput->PlaceMessage(UserMessage(0, 0, 0, 0, delta));
+		}
+		// down rotation
+		if (delta < 0) {
+			userInput->PlaceMessage(UserMessage(0, 0, 0, 0, delta));
+		}	
+		break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
