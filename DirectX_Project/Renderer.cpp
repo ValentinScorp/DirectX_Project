@@ -34,7 +34,10 @@ void Renderer::Initialize(HWND hWnd)
 	fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
 	wcscpy(fontDesc.FaceName, L"Times New Roman");
 	D3DXCreateFontIndirect(pDevice, &fontDesc, &font);
-		
+
+	terrainRenderer = new TerrainRenderer(pDevice);
+	
+
 	camPosition.x = 0.0f;
 	camPosition.y = -25.0f;
 	camPosition.z = 8.0f;
@@ -185,6 +188,7 @@ void Renderer::Draw()
 	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(45), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, 1.0f, 100.0f);
 	pDevice->SetTransform(D3DTS_PROJECTION, &matProjection);
 	// set the world transform
+	terrainRenderer->Render();
 
 	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
 	pDevice->SetIndices(i_buffer);
@@ -197,36 +201,39 @@ void Renderer::Draw()
 	D3DXMatrixRotationZ(&matRotateZ, index);
 	D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;	
+	
+	
 
-	for (int i = 0; i < (*graph_objects).size(); i++) {
-		GameObject *go = (*graph_objects)[i];
-		go->animate();
-	}
+	if (graph_objects != nullptr) {
+		for (int i = 0; i < (*graph_objects).size(); i++) {
+			GameObject *go = (*graph_objects)[i];
+			go->animate();
+		}
 
-	for (int i = 0; i < (*graph_objects).size(); i++) {
-		GameObject *go = (*graph_objects)[i];
-		D3DXMatrixTranslation(&matTransl, go->position.x, go->position.y, go->position.z);
-		//pDevice->SetTransform(D3DTS_WORLD, &(matRotateY));
+		for (int i = 0; i < (*graph_objects).size(); i++) {
+			GameObject *go = (*graph_objects)[i];
+			D3DXMatrixTranslation(&matTransl, go->position.x, go->position.y, go->position.z);
 
-		matTransform = matRotateZ * matTransl;
+			matTransform = matRotateZ * matTransl;
 
-		pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
-		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
+			pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
+			pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
-		pDevice->SetTexture(0, textures[go->textureId]);
-		pDevice->SetFVF(CUSTOMFVF);
-		
-		VOID *pVoid;
-		
-		v_buffer->Lock(vertexNum * sizeof(VertexData), go->GetVertexNum() * sizeof(VertexData), (void**)&pVoid, D3DLOCK_DISCARD);	
-					
-		memcpy(pVoid, go->GetVertexes(), go->GetVertexNum() * sizeof(VertexData));
-		
-		v_buffer->Unlock();
-				
-		pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, vertexNum, go->GetVertexNum() / 3);
+			pDevice->SetTexture(0, textures[go->textureId]);
+			pDevice->SetFVF(CUSTOMFVF);
 
-		vertexNum = vertexNum + go->GetVertexNum();		
+			VOID *pVoid;
+
+			v_buffer->Lock(vertexNum * sizeof(VertexData), go->GetVertexNum() * sizeof(VertexData), (void**)&pVoid, D3DLOCK_DISCARD);
+
+			memcpy(pVoid, go->GetVertexes(), go->GetVertexNum() * sizeof(VertexData));
+
+			v_buffer->Unlock();
+
+			pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, vertexNum, go->GetVertexNum() / 3);
+
+			vertexNum = vertexNum + go->GetVertexNum();
+		}
 	}
 }
 
@@ -259,6 +266,11 @@ void Renderer::Destroy()
 			textures[i] = NULL;
 		}
 	}	
+
+	if (terrainRenderer != nullptr) {
+		terrainRenderer->Destroy();
+		delete terrainRenderer;
+	}
 	if (pDevice) {
 		pDevice->Release();
 		pDevice = NULL;

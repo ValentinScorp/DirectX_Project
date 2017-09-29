@@ -6,6 +6,7 @@
 
 #include "GameObject.h"
 #include "UserInput.h"
+#include "TerrainRenderer.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -37,6 +38,10 @@ public:
 	void Draw();
 	void EndScene();
 
+	TerrainRenderer* GetTerrainRenderer() {
+		return terrainRenderer;
+	}
+
 	void Destroy();
 
 	~Renderer();
@@ -47,6 +52,7 @@ private:
 	IDirect3DDevice9*	pDevice = nullptr;
 
 	UserInput*			userInput = nullptr;
+	TerrainRenderer*	terrainRenderer = nullptr;
 	//IDirect3DTexture9*	g_texture = nullptr;
 
 	std::vector<IDirect3DTexture9*> textures;
