@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <windowsx.h>
 #include <d3d9.h>
 #include <d3dx9.h>
 
@@ -100,6 +101,9 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	short delta = 0;
+	int xPos = GET_X_LPARAM(lParam);
+	int yPos = GET_Y_LPARAM(lParam);
+
 	switch (message)
 	{
 	case WM_DESTROY:
@@ -124,6 +128,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			userInput->PlaceMessage(UserMessage(0, 0, 0, 0, delta));
 		}	
 		break;
+	case WM_LBUTTONDOWN:
+		userInput->PlaceMessage(UserMessage(xPos, yPos, LeftMouse, 0, delta));
+		break;
+	case WM_LBUTTONUP:
+		userInput->PlaceMessage(UserMessage(xPos, yPos, 0, LeftMouse, delta));
+		break;
+	case WM_RBUTTONDOWN:
+		userInput->PlaceMessage(UserMessage(xPos, yPos, RightMouse, 0, delta));
+		break;
+	case WM_RBUTTONUP:		
+		userInput->PlaceMessage(UserMessage(xPos, yPos, 0, RightMouse, delta));
+		break;
+	case WM_MOUSEMOVE:
+		userInput->PlaceMessage(UserMessage(xPos, yPos, MouseMove, MouseMove, delta));
+		break;
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

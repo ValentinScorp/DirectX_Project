@@ -1,7 +1,8 @@
 #include "Renderer.h"
 
 
-Renderer::Renderer()
+Renderer::Renderer():
+	camera(D3DXVECTOR3(10, -25, 8))
 {
 }
 
@@ -38,9 +39,9 @@ void Renderer::Initialize(HWND hWnd)
 	terrainRenderer = new TerrainRenderer(pDevice);
 	
 
-	camPosition.x = 0.0f;
-	camPosition.y = -25.0f;
-	camPosition.z = 8.0f;
+	//camPosition.x = 0.0f;
+	//camPosition.y = -25.0f;
+	//camPosition.z = 8.0f;
 }
 
 void Renderer::InitializeLightAndMaterials()
@@ -162,26 +163,56 @@ void Renderer::Draw()
 {
 	pDevice->SetFVF(CUSTOMFVF);
 
-	// draw text
-	std::wstring wheelDelta = L"no text";
+	// camera driver todo remove form here
 	if (userInput != nullptr) {
 		userInput->BeginSearch();
 		UserMessage *um;
 		while (um = userInput->GetNextMessage()) {
-			if (um->delta != 0) {
-				wheelDelta = std::to_wstring(um->delta);
-				camPosition.z += (um->delta / 60);
+			if (um->delta > 0) {				
+				camera.moveUp(1);				
+			} 
+			if (um->delta < 0) {
+				camera.moveDown(2);
+			}
+			if (um->keyDown == LeftMouse) {
+				oldX = um->x;
+				oldY = um->y;
+				camera.StartMoveXZ(um->x, um->y);
+			}
+			if (um->keyUp == LeftMouse) {
+				camera.StopMoveXZ();
+			}
+			if (um->keyDown == RightMouse) {
+				oldX = um->x;
+				oldY = um->y;
+				camera.StartMoveXY(um->x, um->y);
+			}
+			if (um->keyUp == RightMouse) {
+				camera.StopMoveXY();
+			}
+			if (um->keyDown == MouseMove) {
+				
+				camera.UpdatePositionXZ(oldX - um->x, oldY - um->y);
+				camera.UpdatePositionXY(oldX - um->x, oldY - um->y);
+				oldX = um->x;
+				oldY = um->y;
 			}
 		}
 	}
+	
+	// draw text
+	std::wstring text = L"no text";
 	RECT R = { 0, 0, 0, 0 };
-	font->DrawText(0, wheelDelta.c_str(), -1, &R, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 255));
+	font->DrawText(0, text.c_str(), -1, &R, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 255));
 
-	D3DXMATRIX matView;
-	D3DXMatrixLookAtLH(&matView,
-		&camPosition,    // the camera position
+	D3DXMATRIX matView1;
+	D3DXMatrixLookAtLH(&matView1,
+		&camera.GetPosition(),    // the camera position
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),     // the look-at position
 		&D3DXVECTOR3(0.0f, 0.0f, 1.0f));    // the up direction
+
+	D3DXMATRIX matView = camera.GetTransformMatrix();
+
 	pDevice->SetTransform(D3DTS_VIEW, &matView);
 
 	D3DXMATRIX matProjection;
@@ -193,7 +224,7 @@ void Renderer::Draw()
 	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
 	pDevice->SetIndices(i_buffer);
 
-	index += 0.01f;
+	//index += 0.01f;
 	D3DXMATRIX matRotateZ;
 	D3DXMATRIX matTransl;
 	D3DXMATRIX matTransform;

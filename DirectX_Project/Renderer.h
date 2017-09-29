@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "UserInput.h"
 #include "TerrainRenderer.h"
+#include "Camera.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -61,8 +62,10 @@ private:
 	LPDIRECT3DINDEXBUFFER9 i_buffer = NULL;
 	
 	std::vector <GameObject*> *graph_objects = nullptr;
-
-	D3DXVECTOR3 camPosition;
+		
+	Camera camera;
+	int oldX = 0;
+	int oldY = 0;
 
 	float index = 0.0f;
 };

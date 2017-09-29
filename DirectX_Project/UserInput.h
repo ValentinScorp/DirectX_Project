@@ -2,6 +2,14 @@
 
 #include <vector>
 
+enum {
+	LeftMouse = 1,
+	RightMouse,
+	MiddleMouse,
+	MouseMove,
+};
+
+
 class UserMessage {
 public:
 	UserMessage(int ix, int  iy, int  ikeyDown, int ikeyUp, int idelta):
