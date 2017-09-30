@@ -8,8 +8,8 @@
 #include "Scene.h"
 #include "UserInput.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 

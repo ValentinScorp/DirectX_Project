@@ -49,7 +49,7 @@ GameObject* SmaLoader::load(std::string file)
 	char meshName[32] = " ";
 	memcpy(meshName, data_iterator, sizeof(char) * 32);
 	data_iterator += sizeof(char) * 32;
-
+	
 	// vertexes
 	unsigned short vertexTotal = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
@@ -61,7 +61,7 @@ GameObject* SmaLoader::load(std::string file)
 			float *y = (float*)data_iterator; data_iterator += sizeof(float);
 			float *z = (float*)data_iterator; data_iterator += sizeof(float);
 
-			Vector3Df v(*x, *y, *z);
+			Vector3Df v((*x), *y, *z);
 
 			vertexes.push_back(v);
 		}
@@ -78,7 +78,7 @@ GameObject* SmaLoader::load(std::string file)
 			float *y = (float*)data_iterator; data_iterator += sizeof(float);
 			float *z = (float*)data_iterator; data_iterator += sizeof(float);
 
-			Vector3Df n(*x, *y, *z);
+			Vector3Df n((*x), *y, *z);
 
 			normals.push_back(n);
 		}
@@ -139,11 +139,11 @@ GameObject* SmaLoader::load(std::string file)
 		
 		bone->parentIndex = parentIdx;		
 
-		bone->rotation.x = *(float*)data_iterator; data_iterator += sizeof(float);
+		bone->rotation.x = (*(float*)data_iterator); data_iterator += sizeof(float);
 		bone->rotation.y = *(float*)data_iterator; data_iterator += sizeof(float);
 		bone->rotation.z = *(float*)data_iterator; data_iterator += sizeof(float);
 
-		bone->position.x = *(float*)data_iterator; data_iterator += sizeof(float);
+		bone->position.x = (*(float*)data_iterator); data_iterator += sizeof(float);
 		bone->position.y = *(float*)data_iterator; data_iterator += sizeof(float);
 		bone->position.z = *(float*)data_iterator; data_iterator += sizeof(float);
 
@@ -204,10 +204,11 @@ GameObject* SmaLoader::load(std::string file)
 			for (int k = 0; k < numBones; k++) {
 				Vector3Df rotation;
 				Vector3Df position;
-				rotation.x = *(float*)data_iterator; data_iterator += sizeof(float);
+
+				rotation.x = (*(float*)data_iterator); data_iterator += sizeof(float);
 				rotation.y = *(float*)data_iterator; data_iterator += sizeof(float);
 				rotation.z = *(float*)data_iterator; data_iterator += sizeof(float);
-				position.x = *(float*)data_iterator; data_iterator += sizeof(float);
+				position.x = (*(float*)data_iterator); data_iterator += sizeof(float);
 				position.y = *(float*)data_iterator; data_iterator += sizeof(float);
 				position.z = *(float*)data_iterator; data_iterator += sizeof(float);
 

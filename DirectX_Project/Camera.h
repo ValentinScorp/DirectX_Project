@@ -7,6 +7,7 @@ class Camera
 {
 private:
 	D3DXVECTOR3 position;
+	D3DXVECTOR3 rotation;
 	int startX = 0;
 	int startY = 0;
 	bool movingXZ = 0;
@@ -49,8 +50,8 @@ public:
 	}
 	void UpdatePositionXZ(int deltaX, int deltaZ) {
 		if (movingXZ) {
-			position.x += deltaX;
-			position.z += deltaZ;
+			position.x += deltaX * 0.025;
+			position.z += deltaZ * 0.025;
 		}
 	}
 	void StartMoveXY(int x, int y) {
@@ -65,19 +66,24 @@ public:
 	}
 	void UpdatePositionXY(int deltaX, int deltaY) {
 		if (movingXY) {
-			position.x += deltaX;
-			position.y += deltaY;
+			position.x += deltaX * 0.025;
+			position.y += deltaY * 0.025;
 		}
 	}
 
 	D3DXMATRIX GetTransformMatrix() {
 		D3DXMATRIX rotX, rotY, rotZ, pos;
-		D3DXMatrixRotationX(&rotX, 1.0f);
-		D3DXMatrixIdentity(&rotY);
+		D3DXMATRIX finalm;
+		
+		D3DXMatrixRotationX(&rotX, D3DXToRadian(-45));
+		D3DXMatrixRotationY(&rotY, D3DXToRadian(180));
+		//D3DXMatrixIdentity(&rotY);
 		D3DXMatrixIdentity(&rotZ);
-		D3DXMatrixTranslation(&pos, position.x, -position.y, position.z);
-
-		return pos * rotZ * rotY * rotX;
+		D3DXMatrixTranslation(&pos, position.x, position.y, position.z);
+		
+		finalm = rotX * rotY * rotZ * pos;
+		D3DXMatrixInverse(&finalm, 0, &finalm);
+		return  finalm;
 	}
 };
 

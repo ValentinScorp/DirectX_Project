@@ -177,6 +177,9 @@
     <ClInclude Include="Vector3D.h" />
   </ItemGroup>
   <ItemGroup>
+    <Object Include="axis.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
     <Object Include="cube.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Object>

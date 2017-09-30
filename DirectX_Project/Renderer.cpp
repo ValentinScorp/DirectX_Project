@@ -2,7 +2,7 @@
 
 
 Renderer::Renderer():
-	camera(D3DXVECTOR3(10, -25, 8))
+	camera(D3DXVECTOR3(0, -10, 15))
 {
 }
 
@@ -174,14 +174,6 @@ void Renderer::Draw()
 			if (um->delta < 0) {
 				camera.moveDown(2);
 			}
-			if (um->keyDown == LeftMouse) {
-				oldX = um->x;
-				oldY = um->y;
-				camera.StartMoveXZ(um->x, um->y);
-			}
-			if (um->keyUp == LeftMouse) {
-				camera.StopMoveXZ();
-			}
 			if (um->keyDown == RightMouse) {
 				oldX = um->x;
 				oldY = um->y;
@@ -190,10 +182,9 @@ void Renderer::Draw()
 			if (um->keyUp == RightMouse) {
 				camera.StopMoveXY();
 			}
-			if (um->keyDown == MouseMove) {
-				
-				camera.UpdatePositionXZ(oldX - um->x, oldY - um->y);
-				camera.UpdatePositionXY(oldX - um->x, oldY - um->y);
+			if (um->keyDown == MouseMove) {				
+				camera.UpdatePositionXZ(-(oldX - um->x), -(oldY - um->y));
+				camera.UpdatePositionXY(-(oldX - um->x), -(oldY - um->y));
 				oldX = um->x;
 				oldY = um->y;
 			}
@@ -207,7 +198,7 @@ void Renderer::Draw()
 
 	D3DXMATRIX matView1;
 	D3DXMatrixLookAtLH(&matView1,
-		&camera.GetPosition(),    // the camera position
+		&D3DXVECTOR3(0.0f, -10.0f, -10.0f),    // the camera position
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),     // the look-at position
 		&D3DXVECTOR3(0.0f, 0.0f, 1.0f));    // the up direction
 
@@ -238,7 +229,7 @@ void Renderer::Draw()
 	if (graph_objects != nullptr) {
 		for (int i = 0; i < (*graph_objects).size(); i++) {
 			GameObject *go = (*graph_objects)[i];
-			go->animate();
+			//go->animate();
 		}
 
 		for (int i = 0; i < (*graph_objects).size(); i++) {

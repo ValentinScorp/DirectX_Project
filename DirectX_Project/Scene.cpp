@@ -19,11 +19,12 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 
 	
 	GameObject *smaMan = objectFactory->LoadSmaFile2("Cube.002.sma");	
-
+	GameObject *axis = objectFactory->LoadObjFile("axis.obj");
 
 	if (smaMan != nullptr)
 		objects.push_back(smaMan);
-
+	if (axis != nullptr)
+		objects.push_back(axis);
 
 	renderer->SendData(objects);
 }
