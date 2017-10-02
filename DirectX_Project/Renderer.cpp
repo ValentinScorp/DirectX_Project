@@ -1,8 +1,15 @@
 #include "Renderer.h"
 
+struct line_vertex
+{	
+	float x, y, z;
+	DWORD color;	
+};
+const DWORD line_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+
 
 Renderer::Renderer():
-	camera(D3DXVECTOR3(0, -10, 15))
+	camera(D3DXVECTOR3(0, -10, 15), D3DXVECTOR3(-45, 180, 0))
 {
 }
 
@@ -62,7 +69,6 @@ void Renderer::InitializeLightAndMaterials()
 	light.Ambient = D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f);
 	light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	light.Specular = D3DXCOLOR(0.6f, 0.6f, 0.6f, 1.0f);
-
 
 	pDevice->SetLight(0, &light);    // send the light struct properties to light #0
 	pDevice->LightEnable(0, TRUE);    // turn on light #0
@@ -163,6 +169,7 @@ void Renderer::Draw()
 {
 	pDevice->SetFVF(CUSTOMFVF);
 
+	D3DXVECTOR3 endPos;
 	// camera driver todo remove form here
 	if (userInput != nullptr) {
 		userInput->BeginSearch();
@@ -188,6 +195,19 @@ void Renderer::Draw()
 				oldX = um->x;
 				oldY = um->y;
 			}
+
+			if (um->keyDown == LeftMouse) {
+				RayVector camRay = camera.GetVectorRay(um->x, um->y);
+				D3DXVECTOR3 intersection = terrainRenderer->GetTerraneIntersection(camRay);
+				
+				(*graph_objects)[1]->position.x = intersection.x;
+				(*graph_objects)[1]->position.y = intersection.y;
+				(*graph_objects)[1]->position.z = intersection.z;
+
+				endPos.x = camRay.end.x;
+				endPos.y = camRay.end.y;
+				endPos.z = camRay.end.z;
+			}
 		}
 	}
 	
@@ -198,20 +218,39 @@ void Renderer::Draw()
 
 	D3DXMATRIX matView1;
 	D3DXMatrixLookAtLH(&matView1,
-		&D3DXVECTOR3(0.0f, -10.0f, -10.0f),    // the camera position
-		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),     // the look-at position
-		&D3DXVECTOR3(0.0f, 0.0f, 1.0f));    // the up direction
+		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the camera position
+		&D3DXVECTOR3(0.0f, 0.0f, 1.0f),     // the look-at position
+		&D3DXVECTOR3(0.0f, -1.0f, 0.0f));    // the up direction
 
 	D3DXMATRIX matView = camera.GetTransformMatrix();
 
 	pDevice->SetTransform(D3DTS_VIEW, &matView);
 
 	D3DXMATRIX matProjection;
-	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(45), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, 1.0f, 100.0f);
+	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(camera.GetFovy()), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, camera.GetNearPlane(), camera.GetFarPlane());	
 	pDevice->SetTransform(D3DTS_PROJECTION, &matProjection);
 	// set the world transform
 	terrainRenderer->Render();
 
+	// cam line
+	line_vertex line_vertices[] = {
+		{ 0.0f, 0.0f, 0.0f , D3DCOLOR_XRGB(255, 255, 255) },
+		{ 0.0f, 0.0f, 10.0f, D3DCOLOR_XRGB(255, 255, 255) },
+	};
+	line_vertices[0].x = camera.GetPosition().x;
+	line_vertices[0].y = camera.GetPosition().y;
+	line_vertices[0].z = camera.GetPosition().z;
+
+	line_vertices[1].x = camera.GetPosition().x;
+	line_vertices[1].y = camera.GetPosition().y;
+	line_vertices[1].z = camera.GetPosition().z;
+
+	pDevice->SetRenderState(D3DRS_COLORVERTEX, true);
+	pDevice->SetRenderState(D3DRS_LIGHTING, false);
+	pDevice->SetFVF(line_fvf);
+	pDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, line_vertices, sizeof(line_vertex));
+
+	// -----------
 	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
 	pDevice->SetIndices(i_buffer);
 
@@ -221,7 +260,7 @@ void Renderer::Draw()
 	D3DXMATRIX matTransform;
 	D3DXMatrixIdentity(&matTransform);	
 	D3DXMatrixRotationZ(&matRotateZ, index);
-	D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
+	//D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;	
 	
 	

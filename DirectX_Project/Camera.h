@@ -3,22 +3,51 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
+#include "Vector3D.h"
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+
+class RayVector {
+public:
+	RayVector() {
+		begin = {0.0f, 0.0f, 0.0f};
+		end = { 0.0f, 0.0f, 0.0f };
+	}
+	RayVector(D3DXVECTOR3 b, D3DXVECTOR3 e) {
+		begin = { b.x, b.y, b.z };
+		end = { e.x, e.y, e.z };
+	}
+	~RayVector() {}
+	D3DXVECTOR3 begin;
+	D3DXVECTOR3 end;
+};
+
 class Camera
 {
 private:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 rotation;
+	float fovy = 0;
+	float nearPlane = 0;
+	float farPlane = 0;
+
 	int startX = 0;
 	int startY = 0;
 	bool movingXZ = 0;
 	bool movingXY = 0;
 
+	D3DXVECTOR3 camRayBegin;
+	D3DXVECTOR3 camRayEnd;
 public:
-	Camera(D3DXVECTOR3 pos);
+	Camera(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 	~Camera();
 
 	D3DXVECTOR3 GetPosition() {
 		return position;
+	}
+	D3DXVECTOR3 GetRotation() {
+		return rotation;
 	}
 	void moveUp(float delta) {
 		position.z += delta;
@@ -48,6 +77,17 @@ public:
 		startY = 0;
 		movingXZ = 0;
 	}
+
+	float GetFovy() {
+		return fovy;
+	}
+	float GetNearPlane() {
+		return nearPlane;
+	} 
+	float GetFarPlane() {
+		return farPlane;
+	}
+
 	void UpdatePositionXZ(int deltaX, int deltaZ) {
 		if (movingXZ) {
 			position.x += deltaX * 0.025;
@@ -61,7 +101,7 @@ public:
 	}
 	void StopMoveXY() {
 		startX = 0;
-		startY = 0;
+		startY = 0;	
 		movingXY = 0;
 	}
 	void UpdatePositionXY(int deltaX, int deltaY) {
@@ -71,19 +111,24 @@ public:
 		}
 	}
 
+	RayVector GetVectorRay(int x, int y);
+
 	D3DXMATRIX GetTransformMatrix() {
 		D3DXMATRIX rotX, rotY, rotZ, pos;
 		D3DXMATRIX finalm;
 		
-		D3DXMatrixRotationX(&rotX, D3DXToRadian(-45));
-		D3DXMatrixRotationY(&rotY, D3DXToRadian(180));
-		//D3DXMatrixIdentity(&rotY);
-		D3DXMatrixIdentity(&rotZ);
+		D3DXMatrixRotationX(&rotX, D3DXToRadian(rotation.x));
+		D3DXMatrixRotationY(&rotY, D3DXToRadian(rotation.y));		
+		D3DXMatrixRotationZ(&rotZ, D3DXToRadian(rotation.z));
 		D3DXMatrixTranslation(&pos, position.x, position.y, position.z);
 		
 		finalm = rotX * rotY * rotZ * pos;
 		D3DXMatrixInverse(&finalm, 0, &finalm);
 		return  finalm;
 	}
+
+private:
+	void getPlanePoints(float dist, D3DXVECTOR3 *pts);
+	D3DXMATRIX makeOrientationMatrix();
 };
 

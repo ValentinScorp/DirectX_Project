@@ -61,6 +61,35 @@ void TerrainRenderer::Create(int w, int h, int tl)
 			vertexes.push_back(tvdA);
 			vertexes.push_back(tvdD);
 			vertexes.push_back(tvdC);
+
+			Triangle triangle1, triangle2;
+			D3DXVECTOR3 posA, posB, posC, posD;
+			posA.x = tvdA.position.x;
+			posA.y = tvdA.position.y;			
+			posA.z = 0;
+
+			posB.x = tvdB.position.x;
+			posB.y = tvdB.position.y;
+			posB.z = 0;
+
+			posC.x = tvdC.position.x;
+			posC.y = tvdC.position.y;
+			posC.z = 0;
+
+			posD.x = tvdD.position.x;
+			posD.y = tvdD.position.y;
+			posD.z = 0;
+
+			triangle1.A = posA;
+			triangle1.B = posB;
+			triangle1.C = posC;
+
+			triangle2.A = posA;
+			triangle2.B = posC;
+			triangle2.C = posD;
+
+			triangles.push_back(triangle1);
+			triangles.push_back(triangle2);
 		}		
 	}
 
@@ -90,6 +119,80 @@ void TerrainRenderer::Render()
 		//std::wstring errorDescr = DXGetErrorDescription(hr);
 		int i = 0;
 	}
+}
+
+D3DXVECTOR3 TerrainRenderer::GetTerraneIntersection(RayVector rv)
+{
+	D3DXVECTOR3 intersection = {0.0f, 0.0f, 0.0f};
+
+	for (int i = 0; i < triangles.size(); i++) {
+		if (IntersectRayTriangle(rv, triangles[i], intersection)) {
+			return intersection;
+		}
+	}
+
+	intersection.x = 0;
+	intersection.y = 0;
+	intersection.z = 0;
+	return intersection;
+}
+
+bool TerrainRenderer::IntersectRayTriangle(RayVector ray, Triangle triangle, D3DXVECTOR3 &intersectionVertex)
+{
+	// находим вектора сторон треугольника
+	D3DXVECTOR3 u = triangle.B - triangle.A;
+	D3DXVECTOR3 v = triangle.C - triangle.A;
+
+	// находим нормаль к треугольнику
+	D3DXVECTOR3 n;
+	D3DXVec3Cross(&n, &u, &v);
+
+	if (n.x == 0 && n.y == 0 && n.z == 0) {
+		return 0;                       // неверные параметры треугольника (либо точки на одной прямой, либо все в одной точке)
+	}
+
+	// вектор направления луча
+	D3DXVECTOR3 dir = ray.end - ray.begin;
+	// векор от точки на треугольнике до начала луча
+	D3DXVECTOR3 w0 = ray.begin - triangle.A;
+
+	float a = -D3DXVec3Dot(&n, &w0);
+	float b = D3DXVec3Dot(&n, &dir);
+
+	if (fabs(b) < 0.0001) {       // луч паралельный плоскости треугольника
+		if (a == 0) { return 0; }   // луч лежит на плоскости треугольника
+		else { return 0; }   // луч не на плоскости треугольника
+
+	}
+	// найдем точку пересечения луча с треугольником
+	float r = a / b;
+	if (r < 0.0) {
+		return 0;                    // луч идет мимо треугольника
+	}
+	// для сегмента проверить также (r > 1.0) => нет пересечения
+
+	intersectionVertex = ray.begin + dir * r;           // точка пересечения луча и плоскости
+														// лежит ли точка в треугольнике
+	float    uu, uv, vv, wu, wv, D;
+	uu = D3DXVec3Dot(&u, &u);
+	uv = D3DXVec3Dot(&u, &v);
+	vv = D3DXVec3Dot(&v, &v);
+	D3DXVECTOR3 w = intersectionVertex - triangle.A;
+	wu = D3DXVec3Dot(&w, &u);
+	wv = D3DXVec3Dot(&w, &v);
+	D = uv * uv - uu * vv;
+
+	// найдем и проверим параметрические координаты
+	float s = (uv * wv - vv * wu) / D;
+	if (s < 0.0 || s > 1.0) {
+		return 0;                   // точка вне треугольника
+	}
+	float t = (uv * wu - uu * wv) / D;
+	if (t < 0.0 || (s + t) > 1.0) {
+		return 0;                   // точка вне треугольника
+	}
+
+	return 1;
 }
 
 void TerrainRenderer::Destroy()

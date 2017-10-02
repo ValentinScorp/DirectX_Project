@@ -14,8 +14,11 @@ Terrain::~Terrain()
 void Terrain::CreateGraphics(TerrainRenderer * tr)
 {
 	tr->Create(width, height, tile);
+
+
 }
 
 void Terrain::Clear()
 {
 }
+

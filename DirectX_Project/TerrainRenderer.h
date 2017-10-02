@@ -4,6 +4,8 @@
 #include <d3dx9.h>
 #include <vector>
 
+#include "Camera.h"
+
 struct TERRAINVERTEX {
 	FLOAT X, Y, Z;
 	D3DVECTOR NORMAL;
@@ -17,6 +19,13 @@ struct TerrainVertexData {
 	D3DXVECTOR2 uv;
 };
 
+class Triangle {
+public:
+	D3DXVECTOR3 A;
+	D3DXVECTOR3 B;
+	D3DXVECTOR3 C;
+};
+
 class TerrainRenderer
 {
 private:
@@ -26,6 +35,8 @@ private:
 	int numVertexes = 0;
 	IDirect3DTexture9* texture = nullptr;
 
+	std::vector <Triangle> triangles;
+
 public:
 	TerrainRenderer(IDirect3DDevice9* dev);
 	~TerrainRenderer();
@@ -33,5 +44,8 @@ public:
 	void Create(int w, int h, int tl);
 	void Render();
 	void Destroy();
+
+	D3DXVECTOR3 GetTerraneIntersection(RayVector rv);
+	bool IntersectRayTriangle(RayVector ray, Triangle triangle, D3DXVECTOR3 &intersectionVertex);
 };
 

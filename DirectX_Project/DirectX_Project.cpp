@@ -8,9 +8,6 @@
 #include "Scene.h"
 #include "UserInput.h"
 
-#define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 768
-
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 Renderer *renderer = nullptr;
@@ -36,12 +33,13 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	wcex.hIconSm = NULL;
 	RegisterClassExW(&wcex);
 
-	HWND hWnd = CreateWindowW(L"My DirectX Project", L"DirectX Project", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, SCREEN_WIDTH, SCREEN_HEIGHT, nullptr, nullptr, hInstance, nullptr);
+	HWND hWnd = CreateWindowW(L"My DirectX Project", L"DirectX Project", WS_OVERLAPPEDWINDOW, 400, 200, SCREEN_WIDTH, SCREEN_HEIGHT, nullptr, nullptr, hInstance, nullptr);
 
 	if (hWnd == NULL) {
 		return -1;
 	}
 
+	SetWindowLong(hWnd, GWL_STYLE, WS_BORDER);
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -103,6 +101,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	short delta = 0;
 	int xPos = GET_X_LPARAM(lParam);
 	int yPos = GET_Y_LPARAM(lParam);
+
+	POINT mMousePos;
+	GetCursorPos(&mMousePos);
+	ScreenToClient(hWnd, &mMousePos);	
+	RECT windowRect;
+	if (1/*!gWindow->IsFullscreen()*/) {
+		
+		GetWindowRect(hWnd, &windowRect);
+		
+		//mMousePos.x = mMousePos.x - windowRect.left;
+		//mMousePos.y = mMousePos.y - windowRect.top;
+	}
+	//mMousePos.y = 600 - mMousePos.y;
+
+	//xPos = mMousePos.x;
+	//yPos = mMousePos.y;
 
 	switch (message)
 	{
