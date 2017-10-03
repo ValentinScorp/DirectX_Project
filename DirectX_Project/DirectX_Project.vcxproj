@@ -149,6 +149,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="DirectX_Project.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ObjectFactory.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Clock.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="Renderer.h" />
@@ -177,9 +179,6 @@
     <ClInclude Include="Vector3D.h" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="axis.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Object>
     <Object Include="cube.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Object>
@@ -196,6 +195,9 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Arrow.sma">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="cube.sma">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>

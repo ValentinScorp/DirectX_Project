@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "UserInput.h"
+#include "Clock.h"
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -15,6 +16,8 @@ Scene *scene = nullptr;
 UserInput *userInput = nullptr;
 
 ObjectFactory *objectFactory = nullptr;
+
+Clock clock;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
@@ -55,7 +58,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	scene->Initialize(renderer, objectFactory);
 
 	renderer->InitializeLightAndMaterials();
-
+		
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
 	while (msg.message != WM_QUIT) {
@@ -64,10 +67,11 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 			DispatchMessage(&msg);
 		}
 		else {
+			clock.Update();
 			renderer->BeginScene();
 			renderer->Draw();
 			renderer->EndScene();
-			userInput->ClearMessages();
+			userInput->ClearMessages();						
 		}
 	}
 

@@ -263,8 +263,6 @@ void Renderer::Draw()
 	//D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;	
 	
-	
-
 	if (graph_objects != nullptr) {
 		for (int i = 0; i < (*graph_objects).size(); i++) {
 			GameObject *go = (*graph_objects)[i];

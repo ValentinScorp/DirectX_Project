@@ -57,6 +57,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="Clock.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -101,15 +104,15 @@
     <ClInclude Include="Camera.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="Clock.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="cube.obj">
       <Filter>Файлы ресурсов</Filter>
     </Object>
     <Object Include="roman02.obj">
-      <Filter>Файлы ресурсов</Filter>
-    </Object>
-    <Object Include="axis.obj">
       <Filter>Файлы ресурсов</Filter>
     </Object>
   </ItemGroup>
@@ -126,6 +129,9 @@
       <Filter>Файлы ресурсов</Filter>
     </None>
     <None Include="export_bin_sma.py">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+    <None Include="Arrow.sma">
       <Filter>Файлы ресурсов</Filter>
     </None>
   </ItemGroup>
