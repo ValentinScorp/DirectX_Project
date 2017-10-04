@@ -21,9 +21,11 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 
 	camera = new Camera(D3DXVECTOR3(0, -10, 15), D3DXVECTOR3(-45, 180, 0));
 
-	GameObject *smaMan = objectFactory->LoadSmaFile2("Cube.002.sma");	
+	SmaLoader smaLoader;
+
+	GameObject *smaMan = smaLoader.load("Cube.002.sma");	
 //	GameObject *axis = objectFactory->LoadObjFile("axis.obj");
-	GameObject *arrow = objectFactory->LoadSmaFile2("arrow.sma");
+	GameObject *arrow = smaLoader.load("arrow.sma");
 
 	if (smaMan != nullptr)
 		objects.push_back(smaMan);
@@ -32,7 +34,14 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	if (arrow != nullptr)
 		objects.push_back(arrow);
 
-	renderer->SendData(objects);
+	renderer->AttachMesh(smaMan->GetMesh());
+	renderer->AttachMesh(arrow->GetMesh());
+
+	renderer->AllocateVideoMemory();
+
+	for (auto o : objects) {
+		o->textureId = renderer->CreateTexture(o->texture.c_str());
+	}
 }
 
 void Scene::OnMessage(Message mes)

@@ -33,8 +33,10 @@ public:
 	void SetUserInput(UserInput *up);
 
 	void SendData(std::vector<GameObject*> &objects);
+	void AttachMesh(Mesh *m);
+	void AllocateVideoMemory();	
 
-	void CreateTexture(wchar_t *fileName);
+	size_t CreateTexture(std::wstring fileName);
 	void AttachCamera(Camera *cam);
 
 	void BeginScene();
@@ -66,6 +68,7 @@ private:
 	LPDIRECT3DINDEXBUFFER9 i_buffer = NULL;
 	
 	std::vector <GameObject*> *graph_objects = nullptr;
+	std::list <Mesh*> meshes;
 		
 	Camera *camera;
 	int oldX = 0;

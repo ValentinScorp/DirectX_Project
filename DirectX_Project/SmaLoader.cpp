@@ -231,6 +231,8 @@ GameObject* SmaLoader::load(std::string file)
 
 	go->name = meshName;
 
+	Mesh *mesh = new Mesh();
+
 	for (int i = 0; i < vertexes.size(); i++) {
 		VertexData vd;
 
@@ -243,10 +245,17 @@ GameObject* SmaLoader::load(std::string file)
 		vd.uv = texcoords[i];
 
 		go->AddVertex(vd);
-		go->AddIndex(i);
+		
 
+		D3DXVECTOR3 pos(vertexes[i].x, vertexes[i].y, vertexes[i].z);
+		D3DXVECTOR3 nor(normals[i].x, normals[i].y, normals[i].z);
+		D3DXVECTOR2 uv(texcoords[i].x, texcoords[i].y);
+		mesh->addVertex(pos, nor, uv);
+		
 		go->vertPositionsInit.push_back(vertexes[i]);
 	}
+
+	go->AddMesh(mesh);
 
 	return go;
 }

@@ -15,6 +15,8 @@ GameObject::GameObject()
 	animationFrame = 0;
 	animationSpeed = 0.1;
 	command = 0;
+
+	mesh = nullptr;
 }
 
 GameObject::~GameObject()
@@ -28,6 +30,11 @@ GameObject::~GameObject()
 			delete animations[i];
 		}
 	}
+
+	if (mesh != nullptr) {
+		delete mesh;
+	}
+
 }
 
 void GameObject::AddVertex(VertexData vd)
@@ -38,6 +45,18 @@ void GameObject::AddVertex(VertexData vd)
 void GameObject::AddIndex(int i)
 {
 	indexes.push_back(i);
+}
+
+void GameObject::AddMesh(Mesh * m)
+{
+	if (m != 0) {
+		mesh = m;
+	}
+}
+
+Mesh * GameObject::GetMesh()
+{
+	return mesh;
 }
 
 D3DXVECTOR3 GameObject::GetPosition()

@@ -121,24 +121,14 @@ void Renderer::SendData(std::vector<GameObject*> &objects)
 {
 	graph_objects = &objects;
 
-	int vertexNum = 0;
-	int indexNum = 0;
-	for (int i = 0; i < objects.size(); i++) {
-		GameObject *obj = objects[i];
-		vertexNum = vertexNum + obj->GetVertexNum();
-		indexNum = indexNum + obj->GetIndexNum();		
+	int vertexNum = 0;	
+	for (auto m : meshes) {
+		vertexNum = vertexNum + m->GetVertexesNum();
 	}
+	
 
-	std::vector<VertexData> vert;
-	std::vector<int> ind;
 	for (int i = 0; i < objects.size(); i++) {
 		GameObject *obj = objects[i];
-		for (int j = 0; j < obj->GetVertexNum(); j++) {
-			vert.push_back(obj->vertexes[j]);
-		}		
-		for (int j = 0; j < obj->GetIndexNum(); j++) {
-			ind.push_back(obj->indexes[j]);
-		}
 		IDirect3DTexture9* tex = nullptr;
 		D3DXCreateTextureFromFile(pDevice, obj->texture.c_str(), &tex);
 		obj->textureId = textures.size();
@@ -146,16 +136,29 @@ void Renderer::SendData(std::vector<GameObject*> &objects)
 	}
 
 	pDevice->CreateVertexBuffer(vertexNum * sizeof(CUSTOMVERTEX), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, CUSTOMFVF, D3DPOOL_DEFAULT, &v_buffer, NULL);
-		
-	//AddVertexes((CUSTOMVERTEX*)&vert[0], vertexNum);
-	//AddIndexes((int*)&ind[0], indexNum);	
 }
 
-void Renderer::CreateTexture(wchar_t * fileName)
+void Renderer::AttachMesh(Mesh * m)
 {
-	//HRESULT hr = D3D_OK;
+	meshes.push_back(m);
+}
 
-	//hr = D3DXCreateTextureFromFile(pDevice, fileName, &g_texture);	
+void Renderer::AllocateVideoMemory()
+{
+	int vertexNum = 0;
+	for (auto m : meshes) {
+		vertexNum = vertexNum + m->GetVertexesNum();
+	}
+		
+	pDevice->CreateVertexBuffer(vertexNum * sizeof(CUSTOMVERTEX), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, CUSTOMFVF, D3DPOOL_DEFAULT, &v_buffer, NULL);
+}
+
+size_t Renderer::CreateTexture(std::wstring fileName)
+{
+	IDirect3DTexture9* tex = nullptr;
+	D3DXCreateTextureFromFile(pDevice, fileName.c_str(), &tex);
+	textures.push_back(tex);
+	return (textures.size() - 1);
 }
 
 void Renderer::AttachCamera(Camera * cam)
@@ -230,36 +233,31 @@ void Renderer::Draw()
 	//D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;	
 	
-	if (graph_objects != nullptr) {
-		for (int i = 0; i < (*graph_objects).size(); i++) {
-			GameObject *go = (*graph_objects)[i];
-			//go->animate();
-		}
+	for (auto m : meshes) {
+		// todo
+		D3DXMatrixTranslation(&matTransl, 0, 0, 0);
+		////////
+		matTransform = matRotateZ * matTransl;
 
-		for (int i = 0; i < (*graph_objects).size(); i++) {
-			GameObject *go = (*graph_objects)[i];
-			D3DXMatrixTranslation(&matTransl, go->position.x, go->position.y, go->position.z);
+		pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
+		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
-			matTransform = matRotateZ * matTransl;
+		// todo
+		pDevice->SetTexture(0, textures[0]);
+		////////
+		pDevice->SetFVF(CUSTOMFVF);
 
-			pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
-			pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
-
-			pDevice->SetTexture(0, textures[go->textureId]);
-			pDevice->SetFVF(CUSTOMFVF);
-
-			VOID *pVoid;
-
-			v_buffer->Lock(vertexNum * sizeof(VertexData), go->GetVertexNum() * sizeof(VertexData), (void**)&pVoid, D3DLOCK_DISCARD);
-
-			memcpy(pVoid, go->GetVertexes(), go->GetVertexNum() * sizeof(VertexData));
-
+		VOID *pVoid;				
+		if (m != nullptr) {
+			size_t vertexSize = m->GetVertexSize();
+			size_t meshVertexesNum = m->GetVertexesNum();
+		
+			v_buffer->Lock(vertexNum * vertexSize, meshVertexesNum * vertexSize, (void**)&pVoid, D3DLOCK_DISCARD);
+			memcpy(pVoid, m->GetVertexes(), meshVertexesNum * vertexSize);
 			v_buffer->Unlock();
-
-			pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, vertexNum, go->GetVertexNum() / 3);
-
-			vertexNum = vertexNum + go->GetVertexNum();
-		}
+			pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, vertexNum, meshVertexesNum / 3);
+			vertexNum = vertexNum + meshVertexesNum;
+		}		
 	}
 }
 

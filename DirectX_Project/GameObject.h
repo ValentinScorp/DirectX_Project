@@ -6,6 +6,7 @@
 #include "Animation.h"
 #include "MessageManager.h"
 #include "GameObject.h"
+#include "Mesh.h"
 
 #include <vector>
 
@@ -53,6 +54,8 @@ public:
 
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 rotation;
+
+	Mesh *mesh;
 	
 	std::vector<Vector3Df> vertPositionsInit;
 	std::vector<VertexData> vertexes;	
@@ -90,6 +93,9 @@ public:
 	unsigned int GetVertexNum() {
 		return vertexes.size();
 	}
+
+	void AddMesh(Mesh *m);
+	Mesh* GetMesh();
 
 	D3DXVECTOR3 GetPosition();
 	void SetPosition(D3DXVECTOR3 pos);
