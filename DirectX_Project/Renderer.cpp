@@ -8,9 +8,9 @@ struct line_vertex
 const DWORD line_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 
 
-Renderer::Renderer():
-	camera(D3DXVECTOR3(0, -10, 15), D3DXVECTOR3(-45, 180, 0))
+Renderer::Renderer(Camera *cam)	
 {
+	camera = cam;
 }
 
 void Renderer::Initialize(HWND hWnd)
@@ -158,6 +158,13 @@ void Renderer::CreateTexture(wchar_t * fileName)
 	//hr = D3DXCreateTextureFromFile(pDevice, fileName, &g_texture);	
 }
 
+void Renderer::AttachCamera(Camera * cam)
+{
+	if (cam != 0) {
+		camera = cam;
+	}
+}
+
 void Renderer::BeginScene()
 {
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 0.0f, 0);
@@ -170,46 +177,6 @@ void Renderer::Draw()
 	pDevice->SetFVF(CUSTOMFVF);
 
 	D3DXVECTOR3 endPos;
-	// camera driver todo remove form here
-	if (userInput != nullptr) {
-		userInput->BeginSearch();
-		UserMessage *um;
-		while (um = userInput->GetNextMessage()) {
-			if (um->delta > 0) {				
-				camera.moveUp(1);				
-			} 
-			if (um->delta < 0) {
-				camera.moveDown(2);
-			}
-			if (um->keyDown == RightMouse) {
-				oldX = um->x;
-				oldY = um->y;
-				camera.StartMoveXY(um->x, um->y);
-			}
-			if (um->keyUp == RightMouse) {
-				camera.StopMoveXY();
-			}
-			if (um->keyDown == MouseMove) {				
-				camera.UpdatePositionXZ(-(oldX - um->x), -(oldY - um->y));
-				camera.UpdatePositionXY(-(oldX - um->x), -(oldY - um->y));
-				oldX = um->x;
-				oldY = um->y;
-			}
-
-			if (um->keyDown == LeftMouse) {
-				RayVector camRay = camera.GetVectorRay(um->x, um->y);
-				D3DXVECTOR3 intersection = terrainRenderer->GetTerraneIntersection(camRay);
-				
-				(*graph_objects)[1]->position.x = intersection.x;
-				(*graph_objects)[1]->position.y = intersection.y;
-				(*graph_objects)[1]->position.z = intersection.z;
-
-				endPos.x = camRay.end.x;
-				endPos.y = camRay.end.y;
-				endPos.z = camRay.end.z;
-			}
-		}
-	}
 	
 	// draw text
 	std::wstring text = L"no text";
@@ -222,12 +189,12 @@ void Renderer::Draw()
 		&D3DXVECTOR3(0.0f, 0.0f, 1.0f),     // the look-at position
 		&D3DXVECTOR3(0.0f, -1.0f, 0.0f));    // the up direction
 
-	D3DXMATRIX matView = camera.GetTransformMatrix();
+	D3DXMATRIX matView = camera->GetTransformMatrix();
 
 	pDevice->SetTransform(D3DTS_VIEW, &matView);
 
 	D3DXMATRIX matProjection;
-	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(camera.GetFovy()), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, camera.GetNearPlane(), camera.GetFarPlane());	
+	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(camera->GetFovy()), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, camera->GetNearPlane(), camera->GetFarPlane());	
 	pDevice->SetTransform(D3DTS_PROJECTION, &matProjection);
 	// set the world transform
 	terrainRenderer->Render();
@@ -237,13 +204,13 @@ void Renderer::Draw()
 		{ 0.0f, 0.0f, 0.0f , D3DCOLOR_XRGB(255, 255, 255) },
 		{ 0.0f, 0.0f, 10.0f, D3DCOLOR_XRGB(255, 255, 255) },
 	};
-	line_vertices[0].x = camera.GetPosition().x;
-	line_vertices[0].y = camera.GetPosition().y;
-	line_vertices[0].z = camera.GetPosition().z;
+	line_vertices[0].x = camera->GetPosition().x;
+	line_vertices[0].y = camera->GetPosition().y;
+	line_vertices[0].z = camera->GetPosition().z;
 
-	line_vertices[1].x = camera.GetPosition().x;
-	line_vertices[1].y = camera.GetPosition().y;
-	line_vertices[1].z = camera.GetPosition().z;
+	line_vertices[1].x = camera->GetPosition().x;
+	line_vertices[1].y = camera->GetPosition().y;
+	line_vertices[1].z = camera->GetPosition().z;
 
 	pDevice->SetRenderState(D3DRS_COLORVERTEX, true);
 	pDevice->SetRenderState(D3DRS_LIGHTING, false);
@@ -302,6 +269,11 @@ void Renderer::EndScene()
 	pDevice->Present(NULL, NULL, NULL, NULL);
 }
 
+void Renderer::SetCamera(Camera * cam)
+{
+	camera = cam;
+}
+
 void Renderer::Destroy()
 {
 	if (font != NULL)
@@ -337,6 +309,18 @@ void Renderer::Destroy()
 	if (pDirect3D) {
 		pDirect3D->Release();
 		pDirect3D = NULL;
+	}
+}
+
+void Renderer::OnMessage(Message mess)
+{
+	if (mess.type == "user_input" && mess.name == "left_mouse_button_down") {
+		RayVector camRay = camera->GetVectorRay(mess.x, mess.y);
+		D3DXVECTOR3 intersection = terrainRenderer->GetTerraneIntersection(camRay);
+
+		(*graph_objects)[1]->position.x = intersection.x;
+		(*graph_objects)[1]->position.y = intersection.y;
+		(*graph_objects)[1]->position.z = intersection.z;
 	}
 }
 

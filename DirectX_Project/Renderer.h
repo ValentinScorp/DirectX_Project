@@ -8,6 +8,7 @@
 #include "UserInput.h"
 #include "TerrainRenderer.h"
 #include "Camera.h"
+#include "MessageManager.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -19,10 +20,10 @@ struct CUSTOMVERTEX {
 };
 #define CUSTOMFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)
 
-class Renderer
+class Renderer : public MessageReceiver
 {
 public:
-	Renderer();
+	Renderer(Camera *cam);
 
 	void Initialize(HWND hWnd);	
 	void InitializeLightAndMaterials();
@@ -34,6 +35,7 @@ public:
 	void SendData(std::vector<GameObject*> &objects);
 
 	void CreateTexture(wchar_t *fileName);
+	void AttachCamera(Camera *cam);
 
 	void BeginScene();
 	void Draw();
@@ -42,8 +44,10 @@ public:
 	TerrainRenderer* GetTerrainRenderer() {
 		return terrainRenderer;
 	}
+	void SetCamera(Camera *cam);
 
 	void Destroy();
+	void OnMessage(Message mess);
 
 	~Renderer();
 
@@ -63,7 +67,7 @@ private:
 	
 	std::vector <GameObject*> *graph_objects = nullptr;
 		
-	Camera camera;
+	Camera *camera;
 	int oldX = 0;
 	int oldY = 0;
 

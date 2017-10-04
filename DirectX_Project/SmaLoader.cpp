@@ -229,6 +229,8 @@ GameObject* SmaLoader::load(std::string file)
 		return nullptr;
 	}
 
+	go->name = meshName;
+
 	for (int i = 0; i < vertexes.size(); i++) {
 		VertexData vd;
 

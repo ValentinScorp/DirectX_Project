@@ -1,13 +1,28 @@
+#include <math.h>
+
 #include "GameObject.h"
 
 GameObject::GameObject()
 {
+	position.x = 0;
+	position.y = 0;
+	position.z = 0;
+
+	rotation.x = 0;
+	rotation.y = 0;
+	rotation.z = 0;
+
 	animationFrame = 0;
 	animationSpeed = 0.1;
+	command = 0;
 }
 
 GameObject::~GameObject()
 {
+	if (command != 0) {
+		delete command;
+	}
+
 	for (int i = 0; i < animations.size(); i++) {
 		if (animations[i] != nullptr) {
 			delete animations[i];
@@ -23,6 +38,38 @@ void GameObject::AddVertex(VertexData vd)
 void GameObject::AddIndex(int i)
 {
 	indexes.push_back(i);
+}
+
+D3DXVECTOR3 GameObject::GetPosition()
+{
+	return position;
+}
+
+void GameObject::SetPosition(D3DXVECTOR3 pos)
+{
+	position = pos;
+}
+
+void GameObject::SetCommand(UnitCommand * com)
+{
+	if (command != 0) {
+		delete command;
+		command = 0;
+	}
+	command = com;
+}
+
+void GameObject::Update(float dt)
+{
+	if (command != 0) {
+		if (command->IsComplete()) {
+			delete command;
+			command = 0;
+		}
+		else {
+			command->Update();
+		}		
+	}
 }
 
 void GameObject::animate()
@@ -81,3 +128,43 @@ void GameObject::animate()
 	}
 }
 
+void MoveUnitCommand::Update()
+{
+	if (complete == 1) {
+		return;
+	}
+
+	D3DXVECTOR3 delta = gameobject->GetPosition();
+	delta = destination - delta;
+
+	float lengthToTarget = D3DXVec3Length(&delta);	
+	
+	float xsign = 1;
+	float ysign = 1;
+	if (delta.x < 0)
+		xsign = -1;
+	if (delta.y < 0)
+		ysign = -1;
+	if (delta.x != 0) {
+		float tang = abs(delta.y / delta.x);
+		float rotation = atan(tang);
+		delta.x = cos(rotation) * xsign;
+		delta.y = sin(rotation) * ysign;
+	}
+
+	if (delta.x == 0) {
+		delta.x = 1;
+		delta.y = 0;
+	}
+	if (delta.y == 0) {
+		delta.x = 0;
+		delta.y = 1;
+	}	
+	if (lengthToTarget > (D3DXVec3Length(&delta) * speed)) {
+		gameobject->SetPosition(gameobject->GetPosition() + delta * speed);
+	}
+	else
+	{
+		complete = 1;
+	}
+}

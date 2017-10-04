@@ -15,6 +15,37 @@ Camera::~Camera()
 {
 }
 
+void Camera::OnMessage(Message mes)
+{
+	if (mes.type == "user_input")
+	{
+		if (mes.name == "right_mouse_button_down") {
+			oldX = mes.x;
+			oldY = mes.y;			
+			movingXY  = 1;
+		}
+		if (mes.name == "right_mouse_button_up") {
+			movingXY = 0;
+		}
+		if (mes.name == "mouse_wheel") {
+			if (mes.delta > 0) {
+				moveUp(1);
+			}
+			if (mes.delta < 0) {
+				moveDown(2);
+			}
+		}
+		if (mes.name == "mouse_move") {
+			if (movingXY) {
+				position.x += ((mes.x - oldX) * 0.025);
+				position.y += ((mes.y - oldY) * 0.025);
+				oldX = mes.x;
+				oldY = mes.y;
+			}			
+		}
+	}
+}
+
 RayVector Camera::GetVectorRay(int x, int y)
 {	
 	D3DXVECTOR3 pts[4];

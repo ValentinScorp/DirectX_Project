@@ -4,6 +4,7 @@
 #include <d3dx9.h>
 
 #include "Vector3D.h"
+#include "MessageManager.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -23,7 +24,7 @@ public:
 	D3DXVECTOR3 end;
 };
 
-class Camera
+class Camera : public MessageReceiver
 {
 private:
 	D3DXVECTOR3 position;
@@ -106,10 +107,12 @@ public:
 	}
 	void UpdatePositionXY(int deltaX, int deltaY) {
 		if (movingXY) {
-			position.x += deltaX * 0.025;
-			position.y += deltaY * 0.025;
+			position.x += deltaX * 0.0025;
+			position.y += deltaY * 0.0025;
 		}
 	}
+
+	void OnMessage(Message mes);
 
 	RayVector GetVectorRay(int x, int y);
 
@@ -130,5 +133,8 @@ public:
 private:
 	void getPlanePoints(float dist, D3DXVECTOR3 *pts);
 	D3DXMATRIX makeOrientationMatrix();
+
+	int oldX;
+	int oldY;
 };
 

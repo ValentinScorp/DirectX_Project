@@ -17,6 +17,7 @@ UserInput *userInput = nullptr;
 
 ObjectFactory *objectFactory = nullptr;
 
+Camera camera(D3DXVECTOR3(0, 0, 0), D3DXVECTOR3(0, 0, 0));
 Clock clock;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
@@ -48,14 +49,19 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
 	userInput = new UserInput();
 
-	renderer = new Renderer();
+	renderer = new Renderer(&camera);
 	renderer->Initialize(hWnd);
 	renderer->SetUserInput(userInput);
-
+	
 	objectFactory = new ObjectFactory(renderer);
 
 	scene = new Scene();
 	scene->Initialize(renderer, objectFactory);
+
+	renderer->SetCamera(scene->GetActiveCamera());
+
+	userInput->RegisterListener(scene->GetActiveCamera());
+	userInput->RegisterListener(scene);
 
 	renderer->InitializeLightAndMaterials();
 		
@@ -68,6 +74,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 		}
 		else {
 			clock.Update();
+			scene->UpdateUnits(clock.GetDeltaTime());
 			renderer->BeginScene();
 			renderer->Draw();
 			renderer->EndScene();
@@ -136,30 +143,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_MOUSEWHEEL:
-		delta = GET_WHEEL_DELTA_WPARAM(wParam);
-		// up rotation
-		if (delta > 0) {
-			userInput->PlaceMessage(UserMessage(0, 0, 0, 0, delta));
+		delta = GET_WHEEL_DELTA_WPARAM(wParam);		
+		if (delta != 0) {			
+			userInput->SendMessage(Message("user_input", "mouse_wheel", xPos, yPos, delta));
 		}
-		// down rotation
-		if (delta < 0) {
-			userInput->PlaceMessage(UserMessage(0, 0, 0, 0, delta));
-		}	
 		break;
-	case WM_LBUTTONDOWN:
-		userInput->PlaceMessage(UserMessage(xPos, yPos, LeftMouse, 0, delta));
+	case WM_LBUTTONDOWN:	
+		userInput->SendMessage(Message("user_input", "left_mouse_button_down", xPos, yPos, 0));
 		break;
 	case WM_LBUTTONUP:
-		userInput->PlaceMessage(UserMessage(xPos, yPos, 0, LeftMouse, delta));
+		userInput->SendMessage(Message("user_input", "left_mouse_button_up", xPos, yPos, 0));		
 		break;
 	case WM_RBUTTONDOWN:
-		userInput->PlaceMessage(UserMessage(xPos, yPos, RightMouse, 0, delta));
+		userInput->SendMessage(Message("user_input", "right_mouse_button_down", xPos, yPos, 0));
 		break;
 	case WM_RBUTTONUP:		
-		userInput->PlaceMessage(UserMessage(xPos, yPos, 0, RightMouse, delta));
+		userInput->SendMessage(Message("user_input", "right_mouse_button_up", xPos, yPos, 0));
 		break;
 	case WM_MOUSEMOVE:
-		userInput->PlaceMessage(UserMessage(xPos, yPos, MouseMove, MouseMove, delta));
+		//userInput->PlaceMessage(UserMessage(xPos, yPos, MouseMove, MouseMove, delta));
+		userInput->SendMessage(Message("user_input", "mouse_move", xPos, yPos, 0));
 		break;
 
     default:

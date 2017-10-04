@@ -3,6 +3,7 @@
 
 Scene::Scene()
 {
+	camera = 0;
 }
 
 void Scene::Initialize(Renderer *r, ObjectFactory *of)
@@ -18,6 +19,8 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	renderer = r;
 	
 
+	camera = new Camera(D3DXVECTOR3(0, -10, 15), D3DXVECTOR3(-45, 180, 0));
+
 	GameObject *smaMan = objectFactory->LoadSmaFile2("Cube.002.sma");	
 //	GameObject *axis = objectFactory->LoadObjFile("axis.obj");
 	GameObject *arrow = objectFactory->LoadSmaFile2("arrow.sma");
@@ -30,6 +33,33 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 		objects.push_back(arrow);
 
 	renderer->SendData(objects);
+}
+
+void Scene::OnMessage(Message mes)
+{
+	if (mes.type == "user_input" && mes.name == "left_mouse_button_down") {
+		for (GameObject* go : objects) {
+			if (go->name == "Arrow") {
+
+				RayVector camRay = camera->GetVectorRay(mes.x, mes.y);
+				D3DXVECTOR3 intersection = terrain->GetTerrainRenderer()->GetTerraneIntersection(camRay);
+								
+				go->SetCommand(new MoveUnitCommand(go, intersection));
+			}
+		}
+	}
+}
+
+void Scene::UpdateUnits(float dt)
+{
+	for (GameObject *go : objects) {
+		go->Update(dt);
+	}
+}
+
+Camera * Scene::GetActiveCamera()
+{
+	return camera;
 }
 
 void Scene::Destroy()
@@ -51,4 +81,7 @@ void Scene::Destroy()
 
 Scene::~Scene()
 {
+	if (camera != 0) {
+		delete camera;
+	}
 }

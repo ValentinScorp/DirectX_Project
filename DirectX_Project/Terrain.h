@@ -21,7 +21,8 @@ public:
 	Terrain(int w, int h, float t);
 	~Terrain();
 
-	void CreateGraphics(TerrainRenderer *tr);	
+	void CreateGraphics(TerrainRenderer *tr);
+	TerrainRenderer* GetTerrainRenderer();
 
 	void Clear();
 };

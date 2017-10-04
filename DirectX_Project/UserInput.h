@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "MessageManager.h"
+
 enum {
 	LeftMouse = 1,
 	RightMouse,
@@ -24,7 +26,7 @@ public:
 	int delta;
 };
 
-class UserInput
+class UserInput : public MessageSender
 {
 public:
 	UserInput();
