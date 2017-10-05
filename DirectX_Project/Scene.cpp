@@ -41,10 +41,6 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	renderer->AddGameObject(arrow);
 
 	renderer->AllocateVideoMemory();
-
-	for (auto o : objects) {
-		o->textureId = renderer->CreateTexture(o->texture.c_str());
-	}
 }
 
 void Scene::OnMessage(Message mes)

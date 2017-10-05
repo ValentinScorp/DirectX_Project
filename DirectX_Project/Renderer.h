@@ -43,8 +43,7 @@ public:
 	void AddVertexes(CUSTOMVERTEX *vertexes, int vertexesNumb);
 	void AddIndexes(int *indexes, int indexesNumb);
 	void SetUserInput(UserInput *up);
-
-	void SendData(std::vector<GameObject*> &objects);
+		
 	void AttachMesh(Mesh *m);
 	void AllocateVideoMemory();	
 
@@ -74,8 +73,7 @@ private:
 
 	UserInput*			userInput = nullptr;
 	TerrainRenderer*	terrainRenderer = nullptr;
-	//IDirect3DTexture9*	g_texture = nullptr;
-
+	
 	std::vector<IDirect3DTexture9*> textures;
 
 	LPDIRECT3DVERTEXBUFFER9 v_buffer = NULL;

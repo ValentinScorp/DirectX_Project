@@ -59,9 +59,7 @@ public:
 	std::vector<Vector3Df> vertPositionsInit;
 	std::vector<VertexData> vertexes;	
 	std::vector<int> indexes;
-	std::wstring texture = L"default.png";
-	unsigned int textureId = 0;
-
+	
 	Skeleton skeleton;
 	std::vector<Animation*> animations;
 	std::vector<std::vector<Weight>> vertexWeights;

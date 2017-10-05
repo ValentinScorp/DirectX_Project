@@ -117,27 +117,6 @@ void Renderer::SetUserInput(UserInput * up)
 	userInput = up;
 }
 
-void Renderer::SendData(std::vector<GameObject*> &objects)
-{
-	graph_objects = &objects;
-
-	int vertexNum = 0;	
-	for (auto m : meshes) {
-		vertexNum = vertexNum + m->GetVertexesNum();
-	}
-	
-
-	for (int i = 0; i < objects.size(); i++) {
-		GameObject *obj = objects[i];
-		IDirect3DTexture9* tex = nullptr;
-		D3DXCreateTextureFromFile(pDevice, obj->texture.c_str(), &tex);
-		obj->textureId = textures.size();
-		textures.push_back(tex);
-	}
-
-	pDevice->CreateVertexBuffer(vertexNum * sizeof(CUSTOMVERTEX), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, CUSTOMFVF, D3DPOOL_DEFAULT, &v_buffer, NULL);
-}
-
 void Renderer::AttachMesh(Mesh * m)
 {
 	meshes.push_back(m);
@@ -147,6 +126,11 @@ void Renderer::AllocateVideoMemory()
 {
 	int vertexNum = 0;
 	for (auto ro : robjects) {		
+		std::string tn(ro->mesh->GetTexture());
+		std::wstring texname(tn.begin(), tn.end());
+		size_t id = CreateTexture(texname);
+		ro->mesh->SetTextureId(id);
+		
 		vertexNum = vertexNum + ro->mesh->GetVertexesNum();
 	}
 		
@@ -246,21 +230,21 @@ void Renderer::Draw()
 	for (auto ro : robjects) {
 		D3DXVECTOR3 rObjPos = ro->rbody->GetPosition();
 		D3DXMatrixTranslation(&matTransl, rObjPos.x, rObjPos.y, rObjPos.z);
-		////////
+		
 		matTransform = matRotateZ * matTransl;
 
 		pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
 		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
-		// todo
-		pDevice->SetTexture(0, textures[0]);
-		////////
 		pDevice->SetFVF(CUSTOMFVF);
 
 		VOID *pVoid;				
 		if (ro != nullptr) {
 			Mesh *m = ro->mesh;
 			if (m != nullptr) {
+				size_t texid = m->GetTextureId();
+				pDevice->SetTexture(0, textures[texid]);
+
 				size_t vertexSize = m->GetVertexSize();
 				size_t meshVertexesNum = m->GetVertexesNum();
 

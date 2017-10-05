@@ -99,22 +99,21 @@ GameObject* SmaLoader::load(std::string file)
 	}
 
 	// textures
+	std::string texName;
+
 	unsigned short numTextures = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
-
+		
 	for (int i = 0; i < numTextures; i++) {
 		char textureName[64] = "default.png";
 		memcpy(textureName, data_iterator, sizeof(char) * 64);
 		data_iterator += sizeof(char) * 64;
 		
-		std::string texName(textureName);
+		texName = textureName;
 		//setup converter
 		typedef std::codecvt_utf8<wchar_t> convert_type;
-		std::wstring_convert<convert_type, wchar_t> converter;
+		std::wstring_convert<convert_type, wchar_t> converter;	
 
-		//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
-		go->texture = converter.from_bytes(texName);
-				
 		unsigned short numTriangleIndexes = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
 
@@ -233,6 +232,8 @@ GameObject* SmaLoader::load(std::string file)
 
 	Mesh *mesh = new Mesh();
 
+	mesh->SetTexture(texName);
+
 	for (int i = 0; i < vertexes.size(); i++) {
 		VertexData vd;
 
@@ -244,8 +245,7 @@ GameObject* SmaLoader::load(std::string file)
 		vd.normal.z = normals[i].z;
 		vd.uv = texcoords[i];
 
-		go->AddVertex(vd);
-		
+		go->AddVertex(vd);		
 
 		D3DXVECTOR3 pos(vertexes[i].x, vertexes[i].y, vertexes[i].z);
 		D3DXVECTOR3 nor(normals[i].x, normals[i].y, normals[i].z);
@@ -255,8 +255,7 @@ GameObject* SmaLoader::load(std::string file)
 		go->vertPositionsInit.push_back(vertexes[i]);
 	}
 
-	go->AddComponent(mesh);
-	//go->AddMesh(mesh);
+	go->AddComponent(mesh);	
 
 	return go;
 }
