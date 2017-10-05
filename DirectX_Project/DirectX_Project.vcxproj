@@ -156,6 +156,7 @@
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="ObjectFactory.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="SmaLoader.cpp" />
@@ -169,10 +170,12 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="IObjectComponent.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="SmaLoader.h" />

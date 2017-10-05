@@ -4,19 +4,12 @@
 
 GameObject::GameObject()
 {
-	position.x = 0;
-	position.y = 0;
-	position.z = 0;
-
-	rotation.x = 0;
-	rotation.y = 0;
-	rotation.z = 0;
-
 	animationFrame = 0;
 	animationSpeed = 0.1;
 	command = 0;
 
 	mesh = nullptr;
+	rigidBody = nullptr;
 }
 
 GameObject::~GameObject()
@@ -34,7 +27,9 @@ GameObject::~GameObject()
 	if (mesh != nullptr) {
 		delete mesh;
 	}
-
+	if (rigidBody != nullptr) {
+		delete rigidBody;
+	}
 }
 
 void GameObject::AddVertex(VertexData vd)
@@ -54,19 +49,28 @@ void GameObject::AddMesh(Mesh * m)
 	}
 }
 
-Mesh * GameObject::GetMesh()
+RigidBody * GameObject::GetRigidBody()
 {
+	return rigidBody;
+}
+
+Mesh* GameObject::GetMesh() {	
 	return mesh;
 }
 
 D3DXVECTOR3 GameObject::GetPosition()
 {
-	return position;
+	if (rigidBody != nullptr) {
+		return rigidBody->GetPosition();
+	}
+	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 void GameObject::SetPosition(D3DXVECTOR3 pos)
 {
-	position = pos;
+	if (rigidBody != nullptr) {
+		rigidBody->SetPosition(pos);
+	}	
 }
 
 void GameObject::SetCommand(UnitCommand * com)
@@ -144,6 +148,20 @@ void GameObject::animate()
 		vertexes[i].position.x = finalVecPositin.x;
 		vertexes[i].position.y = finalVecPositin.y;
 		vertexes[i].position.z = finalVecPositin.z;
+	}
+}
+
+void GameObject::AddComponent(IObjectComponent *oc)
+{
+	if (oc == nullptr) {
+		return;
+	}
+	std::string cname = oc->GetName();
+	if (cname == "mesh") {
+		mesh = dynamic_cast<Mesh*>(oc);
+	}
+	if (cname == "rigid_body") {
+		rigidBody = dynamic_cast<RigidBody*>(oc);
 	}
 }
 

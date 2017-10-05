@@ -23,19 +23,22 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 
 	SmaLoader smaLoader;
 
-	GameObject *smaMan = smaLoader.load("Cube.002.sma");	
-//	GameObject *axis = objectFactory->LoadObjFile("axis.obj");
-	GameObject *arrow = smaLoader.load("arrow.sma");
+	GameObject *man = smaLoader.load("Cube.002.sma");	
+	RigidBody* manBody = new RigidBody();
+	man->AddComponent(manBody);
 
-	if (smaMan != nullptr)
-		objects.push_back(smaMan);
-//	if (axis != nullptr)
-//		objects.push_back(axis);
+	GameObject *arrow = smaLoader.load("arrow.sma");
+	RigidBody* arrowBody = new RigidBody();
+	arrow->AddComponent(arrowBody);
+
+	if (man != nullptr)
+		objects.push_back(man);
+
 	if (arrow != nullptr)
 		objects.push_back(arrow);
-
-	renderer->AttachMesh(smaMan->GetMesh());
-	renderer->AttachMesh(arrow->GetMesh());
+	
+	renderer->AddGameObject(man);
+	renderer->AddGameObject(arrow);
 
 	renderer->AllocateVideoMemory();
 

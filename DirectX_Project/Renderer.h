@@ -20,6 +20,18 @@ struct CUSTOMVERTEX {
 };
 #define CUSTOMFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)
 
+class RenderObject {
+public:
+	RenderObject():
+		mesh(nullptr), rbody(nullptr)
+	{
+	}
+	~RenderObject() {}
+		
+	Mesh* mesh;
+	RigidBody* rbody;
+};
+
 class Renderer : public MessageReceiver
 {
 public:
@@ -38,6 +50,8 @@ public:
 
 	size_t CreateTexture(std::wstring fileName);
 	void AttachCamera(Camera *cam);
+
+	void AddGameObject(GameObject *go);
 
 	void BeginScene();
 	void Draw();
@@ -69,6 +83,7 @@ private:
 	
 	std::vector <GameObject*> *graph_objects = nullptr;
 	std::list <Mesh*> meshes;
+	std::list <RenderObject*> robjects;
 		
 	Camera *camera;
 	int oldX = 0;

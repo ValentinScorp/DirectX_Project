@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "ObjectFactory.h"
 #include "Terrain.h"
+#include "RigidBody.h"
 
 class Scene : public MessageReceiver
 {

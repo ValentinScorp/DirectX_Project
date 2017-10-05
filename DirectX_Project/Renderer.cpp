@@ -146,8 +146,8 @@ void Renderer::AttachMesh(Mesh * m)
 void Renderer::AllocateVideoMemory()
 {
 	int vertexNum = 0;
-	for (auto m : meshes) {
-		vertexNum = vertexNum + m->GetVertexesNum();
+	for (auto ro : robjects) {		
+		vertexNum = vertexNum + ro->mesh->GetVertexesNum();
 	}
 		
 	pDevice->CreateVertexBuffer(vertexNum * sizeof(CUSTOMVERTEX), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, CUSTOMFVF, D3DPOOL_DEFAULT, &v_buffer, NULL);
@@ -166,6 +166,16 @@ void Renderer::AttachCamera(Camera * cam)
 	if (cam != 0) {
 		camera = cam;
 	}
+}
+
+void Renderer::AddGameObject(GameObject * go)
+{
+	auto robj = new RenderObject();	
+	
+	robj->mesh = go->GetMesh();
+	robj->rbody = go->GetRigidBody();
+	
+	robjects.push_back(robj);	
 }
 
 void Renderer::BeginScene()
@@ -233,9 +243,9 @@ void Renderer::Draw()
 	//D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;	
 	
-	for (auto m : meshes) {
-		// todo
-		D3DXMatrixTranslation(&matTransl, 0, 0, 0);
+	for (auto ro : robjects) {
+		D3DXVECTOR3 rObjPos = ro->rbody->GetPosition();
+		D3DXMatrixTranslation(&matTransl, rObjPos.x, rObjPos.y, rObjPos.z);
 		////////
 		matTransform = matRotateZ * matTransl;
 
@@ -248,15 +258,18 @@ void Renderer::Draw()
 		pDevice->SetFVF(CUSTOMFVF);
 
 		VOID *pVoid;				
-		if (m != nullptr) {
-			size_t vertexSize = m->GetVertexSize();
-			size_t meshVertexesNum = m->GetVertexesNum();
-		
-			v_buffer->Lock(vertexNum * vertexSize, meshVertexesNum * vertexSize, (void**)&pVoid, D3DLOCK_DISCARD);
-			memcpy(pVoid, m->GetVertexes(), meshVertexesNum * vertexSize);
-			v_buffer->Unlock();
-			pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, vertexNum, meshVertexesNum / 3);
-			vertexNum = vertexNum + meshVertexesNum;
+		if (ro != nullptr) {
+			Mesh *m = ro->mesh;
+			if (m != nullptr) {
+				size_t vertexSize = m->GetVertexSize();
+				size_t meshVertexesNum = m->GetVertexesNum();
+
+				v_buffer->Lock(vertexNum * vertexSize, meshVertexesNum * vertexSize, (void**)&pVoid, D3DLOCK_DISCARD);
+				memcpy(pVoid, m->GetVertexes(), meshVertexesNum * vertexSize);
+				v_buffer->Unlock();
+				pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, vertexNum, meshVertexesNum / 3);
+				vertexNum = vertexNum + meshVertexesNum;
+			}
 		}		
 	}
 }
@@ -296,6 +309,12 @@ void Renderer::Destroy()
 		}
 	}	
 
+	for (auto ro : robjects) {
+		if (ro != nullptr) {
+			delete ro;
+		}
+	}
+
 	if (terrainRenderer != nullptr) {
 		terrainRenderer->Destroy();
 		delete terrainRenderer;
@@ -316,9 +335,9 @@ void Renderer::OnMessage(Message mess)
 		RayVector camRay = camera->GetVectorRay(mess.x, mess.y);
 		D3DXVECTOR3 intersection = terrainRenderer->GetTerraneIntersection(camRay);
 
-		(*graph_objects)[1]->position.x = intersection.x;
-		(*graph_objects)[1]->position.y = intersection.y;
-		(*graph_objects)[1]->position.z = intersection.z;
+		//(*graph_objects)[1]->position.x = intersection.x;
+		//(*graph_objects)[1]->position.y = intersection.y;
+		//(*graph_objects)[1]->position.z = intersection.z;
 	}
 }
 

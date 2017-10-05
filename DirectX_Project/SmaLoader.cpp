@@ -255,7 +255,8 @@ GameObject* SmaLoader::load(std::string file)
 		go->vertPositionsInit.push_back(vertexes[i]);
 	}
 
-	go->AddMesh(mesh);
+	go->AddComponent(mesh);
+	//go->AddMesh(mesh);
 
 	return go;
 }

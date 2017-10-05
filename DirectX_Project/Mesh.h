@@ -4,6 +4,7 @@
 #include <d3dx9.h>
 
 #include "Vector3D.h"
+#include "IObjectComponent.h"
 
 class DxVertex {
 public:
@@ -15,7 +16,7 @@ public:
 	D3DXVECTOR2 uv;
 };
 
-class Mesh
+class Mesh : public IObjectComponent
 {
 private:
 	std::vector<DxVertex> vertexes;

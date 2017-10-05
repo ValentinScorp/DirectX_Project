@@ -7,6 +7,7 @@
 #include "MessageManager.h"
 #include "GameObject.h"
 #include "Mesh.h"
+#include "RigidBody.h"
 
 #include <vector>
 
@@ -51,11 +52,9 @@ class GameObject
 {
 public:
 	std::string name;
-
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 rotation;
-
+	
 	Mesh *mesh;
+	RigidBody *rigidBody;
 	
 	std::vector<Vector3Df> vertPositionsInit;
 	std::vector<VertexData> vertexes;	
@@ -96,6 +95,7 @@ public:
 
 	void AddMesh(Mesh *m);
 	Mesh* GetMesh();
+	RigidBody* GetRigidBody();
 
 	D3DXVECTOR3 GetPosition();
 	void SetPosition(D3DXVECTOR3 pos);
@@ -104,4 +104,6 @@ public:
 	void Update(float dt);
 
 	void animate();
+
+	void AddComponent(IObjectComponent *oc);
 };
