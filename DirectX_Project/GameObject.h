@@ -3,7 +3,7 @@
 #include "Vector3D.h"
 #include "Bone.h"
 #include "Skeleton.h"
-#include "Animation.h"
+#include "Animations.h"
 #include "MessageManager.h"
 #include "GameObject.h"
 #include "Mesh.h"
@@ -55,12 +55,12 @@ public:
 	
 	Mesh *mesh;
 	RigidBody *rigidBody;
+	Skeleton skeleton;
 	
 	std::vector<Vector3Df> vertPositionsInit;
 	std::vector<VertexData> vertexes;	
 	std::vector<int> indexes;
 	
-	Skeleton skeleton;
 	std::vector<Animation*> animations;
 	std::vector<std::vector<Weight>> vertexWeights;
 

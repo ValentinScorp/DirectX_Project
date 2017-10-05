@@ -189,7 +189,7 @@ GameObject* SmaLoader::load(std::string file)
 		memcpy(animName, data_iterator, sizeof(char) * 64);
 		data_iterator += sizeof(char) * 64;
 
-		animation->name = animName;
+		animation->SetName(animName);
 
 		unsigned short numKeyframes = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
@@ -214,10 +214,10 @@ GameObject* SmaLoader::load(std::string file)
 				kf.rotations.push_back(rotation);
 				kf.positions.push_back(position);
 			}
-			animation->keyframes.push_back(kf);
+			animation->AddKeyframe(kf);
 		}
 		
-		go->animations.push_back(animation);
+		go->AddComponent(animation);
 	}
 
 	delete[] data;

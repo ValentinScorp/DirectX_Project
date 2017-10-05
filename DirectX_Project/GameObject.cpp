@@ -109,10 +109,10 @@ void GameObject::animate()
 	Animation *a = animations[2];
 
 	std::vector<Bone> bones;
-	for (int i = 0; i < a->keyframes[0].positions.size(); i++) {
+	for (int i = 0; i < a->GetKeyframeNum(); i++) {
 		Bone b;
-		b.position = a->keyframes[animationFrame].positions[i];
-		b.rotation = a->keyframes[animationFrame].rotations[i];
+		b.position = a->GetKeyframe(animationFrame).positions[i];
+		b.rotation = a->GetKeyframe(animationFrame).rotations[i];
 		bones.push_back(b);
 	}
 
@@ -124,10 +124,9 @@ void GameObject::animate()
 
 		D3DXVECTOR3 vertPos(v);
 		D3DXMATRIX bonemat;
-		D3DXMATRIX bonematsum;
 		D3DXMATRIX deformbonemat;
 		D3DXMatrixIdentity(&deformbonemat);
-		D3DXMatrixIdentity(&bonematsum);
+		
 		for (int j = 0; j < weights->size(); j++) {			
 			Bone* b = (*weights)[j].bone;
 			float weight = (*weights)[j].weight;
@@ -136,8 +135,7 @@ void GameObject::animate()
 				deformbonemat = bones[b->index].GetLocalToWorldMatrix();
 				
 				vertPos = v;				
-				D3DXVec3TransformCoord(&vertPos, &vertPos, &bonemat);	
-				//D3DXVec3TransformCoord(&vertPos, &vertPos, &b->GetLocalToWorldMatrix());
+				D3DXVec3TransformCoord(&vertPos, &vertPos, &bonemat);					
 				D3DXVec3TransformCoord(&vertPos, &vertPos, &deformbonemat);
 				vertPos *= weight;
 
@@ -162,6 +160,9 @@ void GameObject::AddComponent(IObjectComponent *oc)
 	}
 	if (cname == "rigid_body") {
 		rigidBody = dynamic_cast<RigidBody*>(oc);
+	}
+	if (cname == "animation") {
+		animations.push_back(dynamic_cast<Animation*>(oc));
 	}
 }
 
