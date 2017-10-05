@@ -1,8 +1,5 @@
 #include "SmaLoader.h"
-#include "Bone.h"
-#include "Skeleton.h"
-#include "Vector3D.h"
-#include "Animation.h"
+#include "Animations.h"
 
 #include <codecvt>
 
@@ -53,7 +50,7 @@ GameObject* SmaLoader::load(std::string file)
 	// vertexes
 	unsigned short vertexTotal = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
-	std::vector<Vector3Df> vertexes;
+	std::vector<D3DXVECTOR3> vertexes;
 	if (vertexTotal) {
 		for (int i = 0; i < (vertexTotal / 3); i++) {
 
@@ -61,7 +58,7 @@ GameObject* SmaLoader::load(std::string file)
 			float *y = (float*)data_iterator; data_iterator += sizeof(float);
 			float *z = (float*)data_iterator; data_iterator += sizeof(float);
 
-			Vector3Df v((*x), *y, *z);
+			D3DXVECTOR3 v((*x), *y, *z);
 
 			vertexes.push_back(v);
 		}
@@ -70,7 +67,7 @@ GameObject* SmaLoader::load(std::string file)
 	// normals
 	unsigned short normalsTotal = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
-	std::vector<Vector3Df> normals;
+	std::vector<D3DXVECTOR3> normals;
 	if (normalsTotal) {
 		for (int i = 0; i < (normalsTotal / 3); i++) {
 
@@ -78,7 +75,7 @@ GameObject* SmaLoader::load(std::string file)
 			float *y = (float*)data_iterator; data_iterator += sizeof(float);
 			float *z = (float*)data_iterator; data_iterator += sizeof(float);
 
-			Vector3Df n((*x), *y, *z);
+			D3DXVECTOR3 n((*x), *y, *z);
 
 			normals.push_back(n);
 		}
@@ -86,14 +83,14 @@ GameObject* SmaLoader::load(std::string file)
 	// texture coordinates
 	unsigned short uvTotal = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
-	std::vector<Vector2Df> texcoords;
+	std::vector<D3DXVECTOR2> texcoords;
 	if (uvTotal > 0 && uvTotal == (vertexTotal / 3) * 2) {
 		for (int i = 0; i < (uvTotal / 2); i++) {
 
 			float *s = (float*)data_iterator; data_iterator += sizeof(float);
 			float *t = (float*)data_iterator; data_iterator += sizeof(float);
 
-			Vector2Df uv(*s, *t);
+			D3DXVECTOR2 uv(*s, *t);
 			texcoords.push_back(uv);
 		}
 	}
@@ -123,38 +120,30 @@ GameObject* SmaLoader::load(std::string file)
 			data_iterator += sizeof(unsigned short);
 		}		
 	}
-	
+	//================================ animations =========================================
 	// skeleton
 	unsigned short numBones = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
+	
+	auto animations = new Animations();
 
-	go->skeleton.bones.reserve(numBones);
-	for (int i = 0; i < numBones; i++) {
-		
-		Bone* bone = new Bone();
+	for (int i = 0; i < numBones; i++) {		
 
 		short parentIdx = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
 		
-		bone->parentIndex = parentIdx;		
+		D3DXVECTOR3 rot, pos;
+		rot.x = (*(float*)data_iterator); data_iterator += sizeof(float);
+		rot.y = *(float*)data_iterator; data_iterator += sizeof(float);
+		rot.z = *(float*)data_iterator; data_iterator += sizeof(float);
 
-		bone->rotation.x = (*(float*)data_iterator); data_iterator += sizeof(float);
-		bone->rotation.y = *(float*)data_iterator; data_iterator += sizeof(float);
-		bone->rotation.z = *(float*)data_iterator; data_iterator += sizeof(float);
-
-		bone->position.x = (*(float*)data_iterator); data_iterator += sizeof(float);
-		bone->position.y = *(float*)data_iterator; data_iterator += sizeof(float);
-		bone->position.z = *(float*)data_iterator; data_iterator += sizeof(float);
-
-		go->skeleton.addBone(bone);
+		pos.x = (*(float*)data_iterator); data_iterator += sizeof(float);
+		pos.y = *(float*)data_iterator; data_iterator += sizeof(float);
+		pos.z = *(float*)data_iterator; data_iterator += sizeof(float);
+		
+		animations->AddBone(pos, rot);		
 	}
-	for (int i = 0; i < go->skeleton.bones.size(); i++) {
-		Bone* bone = go->skeleton.bones[i];
-		if (bone->parentIndex >= 0) {
-			bone->parent = bone;
-		}
-	}
-
+	
 	// vertex weights
 	unsigned short numVertWeights = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
@@ -163,7 +152,7 @@ GameObject* SmaLoader::load(std::string file)
 		unsigned short numWeights = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
 
-		std::vector<Weight> vertexWeights;
+		std::vector<Animations::Weight> vertexWeights;
 		for (int j = 0; j < numWeights; j++) {			
 			short boneIndex = *(unsigned short*)data_iterator;
 			data_iterator += sizeof(unsigned short);
@@ -171,38 +160,39 @@ GameObject* SmaLoader::load(std::string file)
 			float weight = *(float*)data_iterator;
 			data_iterator += sizeof(float);
 
-			Weight w;
-			if (boneIndex >= 0 && boneIndex < go->skeleton.bones.size()) {
-				w.bone = go->skeleton.bones[boneIndex];
-			} 
-			w.weight = weight;
+			
+			Animations::Bone *bone = nullptr;
+			if (boneIndex >= 0 && boneIndex < animations->GetBonesNum()) {
+				bone = animations->GetBone(boneIndex);
+			} 			
+			Animations::Weight w(bone, weight);
 			vertexWeights.push_back(w);
 		}
-		go->vertexWeights.push_back(vertexWeights);
+		animations->AddVertexWeights(vertexWeights);		
 	}
-	// animation
+	// animations
 	unsigned short numAnimations = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
 	for (int i = 0; i < numAnimations; i++)	{
-		Animation *animation = new Animation();
+		
 		char animName[64] = "None";
 		memcpy(animName, data_iterator, sizeof(char) * 64);
 		data_iterator += sizeof(char) * 64;
 
-		animation->SetName(animName);
+		auto *animation = new Animations::Animation(animName);		
 
 		unsigned short numKeyframes = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
 		
 		for (int j = 0; j < numKeyframes; j++) {
-			Keyframe kf;
+			Animations::Keyframe kf;
 			unsigned short keyframeIndex = *(unsigned short*)data_iterator;
 			data_iterator += sizeof(unsigned short);
 
 			kf.index = keyframeIndex;
 			for (int k = 0; k < numBones; k++) {
-				Vector3Df rotation;
-				Vector3Df position;
+				D3DXVECTOR3 rotation;
+				D3DXVECTOR3 position;
 
 				rotation.x = (*(float*)data_iterator); data_iterator += sizeof(float);
 				rotation.y = *(float*)data_iterator; data_iterator += sizeof(float);
@@ -213,12 +203,14 @@ GameObject* SmaLoader::load(std::string file)
 
 				kf.rotations.push_back(rotation);
 				kf.positions.push_back(position);
+				kf.bone.push_back(animations->GetBone(k));
 			}
 			animation->AddKeyframe(kf);
 		}
-		
-		go->AddComponent(animation);
+		animations->AddAnimation(animation);		
 	}
+	
+	go->AddComponent(animations);
 
 	delete[] data;
 	data_iterator = nullptr;
@@ -245,14 +237,14 @@ GameObject* SmaLoader::load(std::string file)
 		vd.normal.z = normals[i].z;
 		vd.uv = texcoords[i];
 
-		go->AddVertex(vd);		
+		//go->AddVertex(vd);		
 
 		D3DXVECTOR3 pos(vertexes[i].x, vertexes[i].y, vertexes[i].z);
 		D3DXVECTOR3 nor(normals[i].x, normals[i].y, normals[i].z);
 		D3DXVECTOR2 uv(texcoords[i].x, texcoords[i].y);
 		mesh->addVertex(pos, nor, uv);
 		
-		go->vertPositionsInit.push_back(vertexes[i]);
+		//go->vertPositionsInit.push_back(vertexes[i]);
 	}
 
 	go->AddComponent(mesh);	

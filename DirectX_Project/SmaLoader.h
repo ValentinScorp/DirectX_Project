@@ -6,7 +6,6 @@
 #include <iterator>
 #include <vector>
 
-#include "Vector3D.h"
 #include "GameObject.h"
 
 

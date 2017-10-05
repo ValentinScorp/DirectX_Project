@@ -27,18 +27,18 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	RigidBody* manBody = new RigidBody();
 	man->AddComponent(manBody);
 
-	GameObject *arrow = smaLoader.load("arrow.sma");
-	RigidBody* arrowBody = new RigidBody();
-	arrow->AddComponent(arrowBody);
+	//GameObject *arrow = smaLoader.load("arrow.sma");
+	//RigidBody* arrowBody = new RigidBody();
+	//arrow->AddComponent(arrowBody);
 
 	if (man != nullptr)
 		objects.push_back(man);
 
-	if (arrow != nullptr)
-		objects.push_back(arrow);
+	//if (arrow != nullptr)
+	//	objects.push_back(arrow);
 	
 	renderer->AddGameObject(man);
-	renderer->AddGameObject(arrow);
+	//renderer->AddGameObject(arrow);
 
 	renderer->AllocateVideoMemory();
 }

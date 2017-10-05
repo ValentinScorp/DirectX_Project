@@ -3,7 +3,6 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "Vector3D.h"
 #include "MessageManager.h"
 
 #define SCREEN_WIDTH 800

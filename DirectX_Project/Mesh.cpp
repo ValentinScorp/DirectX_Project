@@ -19,6 +19,11 @@ void Mesh::addVertex(D3DXVECTOR3 pos, D3DXVECTOR3 nor, D3DXVECTOR2 uv)
 	vertexes.push_back(v);
 }
 
+void Mesh::addVertex(DxVertex ver)
+{
+	vertexes.push_back(ver);
+}
+
 void Mesh::SetTexture(std::string fileName)
 {
 	// "x.sma"
@@ -55,6 +60,10 @@ size_t Mesh::GetVertexSize()
 DxVertex* Mesh::GetVertexes()
 {
 	return &vertexes[0];
+}
+std::vector<DxVertex> & Mesh::GetVertexesRef()
+{
+	return vertexes;
 }
 /*
 void Mesh::addPosition(D3DXVECTOR3 pos)

@@ -157,7 +157,6 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="SmaLoader.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainRenderer.cpp" />
@@ -175,13 +174,11 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="Skeleton.h" />
     <ClInclude Include="SmaLoader.h" />
     <ClInclude Include="sma_spec.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainRenderer.h" />
     <ClInclude Include="UserInput.h" />
-    <ClInclude Include="Vector3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="cube.obj">

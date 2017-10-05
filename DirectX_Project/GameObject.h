@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Vector3D.h"
-#include "Bone.h"
-#include "Skeleton.h"
 #include "Animations.h"
 #include "MessageManager.h"
 #include "GameObject.h"
@@ -14,9 +11,9 @@
 class GameObject;
 
 struct VertexData {
-	Vector3Df position;
-	Vector3Df normal;
-	Vector2Df uv;
+	D3DXVECTOR3 position;
+	D3DXVECTOR3 normal;
+	D3DXVECTOR2 uv;
 };
 
 class UnitCommand {
@@ -54,16 +51,14 @@ public:
 	std::string name;
 	
 	Mesh *mesh;
+	Mesh *animatedMesh;
 	RigidBody *rigidBody;
-	Skeleton skeleton;
-	
-	std::vector<Vector3Df> vertPositionsInit;
+	Animations *animations;
+
+	std::vector<D3DXVECTOR3> vertPositionsInit;
 	std::vector<VertexData> vertexes;	
 	std::vector<int> indexes;
 	
-	std::vector<Animation*> animations;
-	std::vector<std::vector<Weight>> vertexWeights;
-
 	int animationFrame;
 	float animationSpeed;
 
@@ -93,6 +88,7 @@ public:
 
 	void AddMesh(Mesh *m);
 	Mesh* GetMesh();
+	Mesh* GetAnimatedMesh();
 	RigidBody* GetRigidBody();
 
 	D3DXVECTOR3 GetPosition();

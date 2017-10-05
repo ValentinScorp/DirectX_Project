@@ -9,6 +9,7 @@ GameObject::GameObject()
 	command = 0;
 
 	mesh = nullptr;
+	animatedMesh = nullptr;
 	rigidBody = nullptr;
 }
 
@@ -16,14 +17,13 @@ GameObject::~GameObject()
 {
 	if (command != 0) {
 		delete command;
+	}	
+	if (animations != nullptr) {
+		delete animations;
 	}
-
-	for (int i = 0; i < animations.size(); i++) {
-		if (animations[i] != nullptr) {
-			delete animations[i];
-		}
+	if (animatedMesh != nullptr) {
+		delete animatedMesh;
 	}
-
 	if (mesh != nullptr) {
 		delete mesh;
 	}
@@ -56,6 +56,11 @@ RigidBody * GameObject::GetRigidBody()
 
 Mesh* GameObject::GetMesh() {	
 	return mesh;
+}
+
+Mesh * GameObject::GetAnimatedMesh()
+{
+	return animatedMesh;
 }
 
 D3DXVECTOR3 GameObject::GetPosition()
@@ -93,10 +98,25 @@ void GameObject::Update(float dt)
 			command->Update();
 		}		
 	}
+
+	animationSpeed += 1;
+	if (animationSpeed >= 1) {
+		animationSpeed = 0;
+		animationFrame++;
+	}
+	if (animationFrame >= 31) {
+		animationFrame = 0;
+	}
+
+	animations->AnimateMesh(animatedMesh, mesh, "Walk", animationFrame);
 }
 
 void GameObject::animate()
 {
+
+
+
+	/*
 	animationSpeed += 0.4;
 	if (animationSpeed >= 1) {
 		animationSpeed = 0;
@@ -146,7 +166,7 @@ void GameObject::animate()
 		vertexes[i].position.x = finalVecPositin.x;
 		vertexes[i].position.y = finalVecPositin.y;
 		vertexes[i].position.z = finalVecPositin.z;
-	}
+	}*/
 }
 
 void GameObject::AddComponent(IObjectComponent *oc)
@@ -157,12 +177,17 @@ void GameObject::AddComponent(IObjectComponent *oc)
 	std::string cname = oc->GetName();
 	if (cname == "mesh") {
 		mesh = dynamic_cast<Mesh*>(oc);
+		animatedMesh = new Mesh();
+		for (auto v : mesh->GetVertexesRef()) {
+			animatedMesh->addVertex(v);
+		}
+		animatedMesh->SetTexture(mesh->GetTexture());
 	}
 	if (cname == "rigid_body") {
 		rigidBody = dynamic_cast<RigidBody*>(oc);
 	}
-	if (cname == "animation") {
-		animations.push_back(dynamic_cast<Animation*>(oc));
+	if (cname == "animations") {
+		animations = dynamic_cast<Animations*>(oc);
 	}
 }
 

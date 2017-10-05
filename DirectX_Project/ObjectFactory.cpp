@@ -1,7 +1,5 @@
 #include "ObjectFactory.h"
 
-#include "Vector3D.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -117,9 +115,9 @@ GameObject * ObjectFactory::LoadObjFile(std::string fileName)
 	}
 
 	std::string objectName;
-	std::vector<Vector3Df> positions;
-	std::vector<Vector3Df> normals;
-	std::vector<Vector2Df> uvs;
+	std::vector<D3DXVECTOR3> positions;
+	std::vector<D3DXVECTOR3> normals;
+	std::vector<D3DXVECTOR2> uvs;
 
 	int vertexCounter = 0;
 
@@ -136,15 +134,15 @@ GameObject * ObjectFactory::LoadObjFile(std::string fileName)
 			objectName = words[1];
 		}
 		if (words[0] == "v" && words.size() == 4) {			
-			Vector3Df pos(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
+			D3DXVECTOR3 pos(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
 			positions.push_back(pos);
 		}
 		if (words[0] == "vn" && words.size() == 4) {
-			Vector3Df nor(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
+			D3DXVECTOR3 nor(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
 			normals.push_back(nor);
 		}
 		if (words[0] == "vt" && words.size() == 3) {
-			Vector2Df uv(std::stof(words[1]), 1 - std::stof(words[2]));
+			D3DXVECTOR2 uv(std::stof(words[1]), 1 - std::stof(words[2]));
 			uvs.push_back(uv);
 		}
 		if (words[0] == "f" && words.size() == 4) {
@@ -211,7 +209,7 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 	// VERTISES
 	unsigned short vertexTotal = *(unsigned short*)data_iterator;	
 	data_iterator += sizeof(unsigned short);	
-	std::vector<Vector3Df> vertexes;	
+	std::vector<D3DXVECTOR3> vertexes;
 	if (vertexTotal) {	
 		for (int i = 0; i < (vertexTotal / 3); i++) {
 
@@ -219,7 +217,7 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 			float *y = (float*)data_iterator; data_iterator += sizeof(float);
 			float *z = (float*)data_iterator; data_iterator += sizeof(float);
 
-			Vector3Df v(*x, *y, *z);
+			D3DXVECTOR3 v(*x, *y, *z);
 			
 			vertexes.push_back(v);
 		}
@@ -228,7 +226,7 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 	// NORMALS
 	unsigned short normalsTotal = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
-	std::vector<Vector3Df> normals;
+	std::vector<D3DXVECTOR3> normals;
 	if (normalsTotal) {
 		for (int i = 0; i < (normalsTotal / 3); i++) {
 
@@ -236,7 +234,7 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 			float *y = (float*)data_iterator; data_iterator += sizeof(float);
 			float *z = (float*)data_iterator; data_iterator += sizeof(float);
 
-			Vector3Df n(*x, *y, *z);
+			D3DXVECTOR3 n(*x, *y, *z);
 
 			normals.push_back(n);
 		}
@@ -244,14 +242,14 @@ GameObject * ObjectFactory::LoadSmaFile(std::string fileName)
 
 	unsigned short uvTotal = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
-	std::vector<Vector2Df> texcoords;
+	std::vector<D3DXVECTOR2> texcoords;
 	if (uvTotal > 0 && uvTotal == (vertexTotal / 3) * 2) {
 		for (int i = 0; i < (uvTotal / 2); i++) {
 
 			float *s = (float*)data_iterator; data_iterator += sizeof(float);
 			float *t = (float*)data_iterator; data_iterator += sizeof(float);			
 
-			Vector2Df uv(*s, *t);
+			D3DXVECTOR2 uv(*s, *t);
 			texcoords.push_back(uv);
 		}
 	}

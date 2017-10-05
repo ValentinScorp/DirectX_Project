@@ -3,7 +3,6 @@
 #include <vector>
 #include <d3dx9.h>
 
-#include "Vector3D.h"
 #include "IObjectComponent.h"
 
 class DxVertex {
@@ -28,6 +27,7 @@ public:
 	~Mesh();
 
 	void addVertex(D3DXVECTOR3 pos, D3DXVECTOR3 nor, D3DXVECTOR2 uv);
+	void addVertex(DxVertex ver);
 	void SetTexture(std::string fileName);
 	void SetTextureId(size_t id);
 	std::string GetTexture();
@@ -35,6 +35,7 @@ public:
 	
 	size_t GetVertexesNum();
 	size_t GetVertexSize();
-	DxVertex* GetVertexes();	
+	DxVertex* GetVertexes();
+	std::vector<DxVertex>& GetVertexesRef();
 };
 

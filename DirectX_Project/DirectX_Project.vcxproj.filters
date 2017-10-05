@@ -36,9 +36,6 @@
     <ClCompile Include="SmaLoader.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="Skeleton.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="UserInput.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -80,16 +77,10 @@
     <ClInclude Include="ObjectFactory.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3D.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="SmaLoader.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="sma_spec.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Skeleton.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="UserInput.h">

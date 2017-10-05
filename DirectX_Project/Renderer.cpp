@@ -156,7 +156,7 @@ void Renderer::AddGameObject(GameObject * go)
 {
 	auto robj = new RenderObject();	
 	
-	robj->mesh = go->GetMesh();
+	robj->mesh = go->GetAnimatedMesh();
 	robj->rbody = go->GetRigidBody();
 	
 	robjects.push_back(robj);	

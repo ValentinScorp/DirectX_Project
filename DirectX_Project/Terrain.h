@@ -2,11 +2,8 @@
 
 #include <vector>
 
-#include "Vector3D.h"
 #include "TerrainRenderer.h"
 #include "Camera.h"
-
-
 
 class Terrain
 {

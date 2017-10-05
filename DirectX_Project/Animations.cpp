@@ -31,7 +31,7 @@ D3DXMATRIX Animations::Bone::GetLocalToWorldMatrix()
 }
 
 Animations::Animations()
-	: IObjectComponent("animation")
+	: IObjectComponent("animations")
 {
 }
 
@@ -61,7 +61,12 @@ Animations::Bone * Animations::GetBone(size_t id)
 	return nullptr;
 }
 
-void Animations::AddWeights(std::vector<Weight> w)
+size_t Animations::GetBonesNum()
+{
+	return bones.size();
+}
+
+void Animations::AddVertexWeights(std::vector<Weight> w)
 {
 	weights.push_back(w);
 }
@@ -69,6 +74,58 @@ void Animations::AddWeights(std::vector<Weight> w)
 void Animations::AddAnimation(Animation * anim)
 {
 	animations.push_back(anim);
+}
+
+void Animations::AnimateMesh(Mesh *m_out, Mesh *m_in, std::string aname, int frame)
+{
+	Animation* anim = getAnimation(aname);
+	if (anim == nullptr) {
+		return;
+	}
+
+	std::vector<Bone> bones;
+
+	Keyframe *kf = anim->GetKeyframe(frame);
+	
+	std::vector<DxVertex>& in_v = m_in->GetVertexesRef();
+	std::vector<DxVertex>& out_v = m_out->GetVertexesRef();
+
+	for (int i = 0; i < in_v.size(); i++) {			
+		D3DXVECTOR3 finalVecPositin(0.0f, 0.0f, 0.0f);				
+
+		for (int j = 0; j < weights[i].size(); j++) {
+			Bone* init_bone = weights[i][j].bone;			
+			float weight = weights[i][j].weight;
+
+			if (init_bone != nullptr) {
+				Bone deform_bone(*(kf->GetPosition(init_bone)), *(kf->GetRotation(init_bone)));
+				D3DXMATRIX bonemat;
+				D3DXMatrixInverse(&bonemat, 0, &init_bone->GetLocalToWorldMatrix());
+				D3DXMATRIX deformbonemat = deform_bone.GetLocalToWorldMatrix();
+
+				D3DXVECTOR3 vertPos(in_v[i].position);
+				D3DXVec3TransformCoord(&vertPos, &vertPos, &bonemat);
+				D3DXVec3TransformCoord(&vertPos, &vertPos, &deformbonemat);
+				vertPos *= weight;
+
+				finalVecPositin += vertPos;
+			}
+		}
+
+		out_v[i].position.x = finalVecPositin.x;
+		out_v[i].position.y = finalVecPositin.y;
+		out_v[i].position.z = finalVecPositin.z;
+	}
+}
+
+Animations::Animation * Animations::getAnimation(std::string aname)
+{
+	for (auto a : animations) {
+		if (a->GetName() == aname) {
+			return a;
+		}
+	}
+	return nullptr;
 }
 
 
