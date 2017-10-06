@@ -1,5 +1,4 @@
 #include "SmaLoader.h"
-#include "Animations.h"
 
 #include <codecvt>
 
@@ -122,10 +121,13 @@ GameObject* SmaLoader::load(std::string file)
 	}
 	//================================ animations =========================================
 	// skeleton
+	AnimatedMesh *amesh = new AnimatedMesh();
+	amesh->SetTexture(texName);
+
 	unsigned short numBones = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
 	
-	auto animations = new Animations();
+	//auto animations = new Animations();
 
 	for (int i = 0; i < numBones; i++) {		
 
@@ -141,7 +143,7 @@ GameObject* SmaLoader::load(std::string file)
 		pos.y = *(float*)data_iterator; data_iterator += sizeof(float);
 		pos.z = *(float*)data_iterator; data_iterator += sizeof(float);
 		
-		animations->AddBone(pos, rot);		
+		amesh->AddBone(pos, rot);		
 	}
 	
 	// vertex weights
@@ -152,7 +154,7 @@ GameObject* SmaLoader::load(std::string file)
 		unsigned short numWeights = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
 
-		std::vector<Animations::Weight> vertexWeights;
+		std::vector<AnimatedMesh::Weight> vertexWeights;
 		for (int j = 0; j < numWeights; j++) {			
 			short boneIndex = *(unsigned short*)data_iterator;
 			data_iterator += sizeof(unsigned short);
@@ -161,16 +163,17 @@ GameObject* SmaLoader::load(std::string file)
 			data_iterator += sizeof(float);
 
 			
-			Animations::Bone *bone = nullptr;
-			if (boneIndex >= 0 && boneIndex < animations->GetBonesNum()) {
-				bone = animations->GetBone(boneIndex);
+			AnimatedMesh::Bone *bone = nullptr;
+			if (boneIndex >= 0 && boneIndex < amesh->GetBonesNum()) {
+				bone = amesh->GetBone(boneIndex);
 			} 			
-			Animations::Weight w(bone, weight);
+			AnimatedMesh::Weight w(bone, weight);
 			vertexWeights.push_back(w);
 		}
-		animations->AddVertexWeights(vertexWeights);		
+		amesh->AddVertexWeights(vertexWeights);		
 	}
 	// animations
+
 	unsigned short numAnimations = *(unsigned short*)data_iterator;
 	data_iterator += sizeof(unsigned short);
 	for (int i = 0; i < numAnimations; i++)	{
@@ -179,13 +182,13 @@ GameObject* SmaLoader::load(std::string file)
 		memcpy(animName, data_iterator, sizeof(char) * 64);
 		data_iterator += sizeof(char) * 64;
 
-		auto *animation = new Animations::Animation(animName);		
+		auto *animation = new AnimatedMesh::Animation(animName);		
 
 		unsigned short numKeyframes = *(unsigned short*)data_iterator;
 		data_iterator += sizeof(unsigned short);
 		
 		for (int j = 0; j < numKeyframes; j++) {
-			Animations::Keyframe kf;
+			AnimatedMesh::Keyframe kf;
 			unsigned short keyframeIndex = *(unsigned short*)data_iterator;
 			data_iterator += sizeof(unsigned short);
 
@@ -203,14 +206,13 @@ GameObject* SmaLoader::load(std::string file)
 
 				kf.rotations.push_back(rotation);
 				kf.positions.push_back(position);
-				kf.bone.push_back(animations->GetBone(k));
+				kf.bone.push_back(amesh->GetBone(k));
 			}
 			animation->AddKeyframe(kf);
 		}
-		animations->AddAnimation(animation);		
-	}
+		amesh->AddAnimation(animation);
+	}	
 	
-	go->AddComponent(animations);
 
 	delete[] data;
 	data_iterator = nullptr;
@@ -222,9 +224,7 @@ GameObject* SmaLoader::load(std::string file)
 
 	go->name = meshName;
 
-	Mesh *mesh = new Mesh();
-
-	mesh->SetTexture(texName);
+	
 
 	for (int i = 0; i < vertexes.size(); i++) {
 		VertexData vd;
@@ -236,18 +236,14 @@ GameObject* SmaLoader::load(std::string file)
 		vd.normal.y = normals[i].y;
 		vd.normal.z = normals[i].z;
 		vd.uv = texcoords[i];
-
-		//go->AddVertex(vd);		
-
+		
 		D3DXVECTOR3 pos(vertexes[i].x, vertexes[i].y, vertexes[i].z);
 		D3DXVECTOR3 nor(normals[i].x, normals[i].y, normals[i].z);
 		D3DXVECTOR2 uv(texcoords[i].x, texcoords[i].y);
-		mesh->addVertex(pos, nor, uv);
-		
-		//go->vertPositionsInit.push_back(vertexes[i]);
+		amesh->addVertex(pos, nor, uv);
 	}
 
-	go->AddComponent(mesh);	
+	go->SetAnimatedMesh(amesh);	
 
 	return go;
 }

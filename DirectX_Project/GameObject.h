@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Animations.h"
 #include "MessageManager.h"
 #include "GameObject.h"
+#include "AnimatedMesh.h"
 #include "Mesh.h"
 #include "RigidBody.h"
 
@@ -51,10 +51,9 @@ public:
 	std::string name;
 	
 	Mesh *mesh;
-	Mesh *animatedMesh;
+	AnimatedMesh *animatedMesh;
 	RigidBody *rigidBody;
-	Animations *animations;
-
+	
 	std::vector<D3DXVECTOR3> vertPositionsInit;
 	std::vector<VertexData> vertexes;	
 	std::vector<int> indexes;
@@ -99,5 +98,13 @@ public:
 
 	void animate();
 
-	void AddComponent(IObjectComponent *oc);
+	void SetMesh(Mesh *m);
+	void SetRigidBody(RigidBody *rb);
+
+	void SetAnimatedMesh(AnimatedMesh *am);
+	void StartAnimation(std::string aname);
+	void StopAnimation();
+
+	std::string GetName();
+
 };

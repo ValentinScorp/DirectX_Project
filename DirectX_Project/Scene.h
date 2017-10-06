@@ -19,6 +19,8 @@ public:
 	void UpdateUnits(float dt);
 	Camera* GetActiveCamera();
 
+	GameObject* GetGameObject(std::string oname);
+
 	void Destroy();
 
 	~Scene();
@@ -31,5 +33,7 @@ private:
 	Terrain *terrain = nullptr;
 
 	Camera *camera;
+
+	bool tmpRun;
 };
 

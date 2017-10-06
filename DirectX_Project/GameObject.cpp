@@ -17,10 +17,7 @@ GameObject::~GameObject()
 {
 	if (command != 0) {
 		delete command;
-	}	
-	if (animations != nullptr) {
-		delete animations;
-	}
+	}		
 	if (animatedMesh != nullptr) {
 		delete animatedMesh;
 	}
@@ -108,14 +105,12 @@ void GameObject::Update(float dt)
 		animationFrame = 0;
 	}
 
-	animations->AnimateMesh(animatedMesh, mesh, "Walk", animationFrame);
+	//animations->AnimateMesh(animatedMesh, mesh, "Walk", animationFrame);
+	animatedMesh->UpdateAnimation(1);
 }
 
 void GameObject::animate()
 {
-
-
-
 	/*
 	animationSpeed += 0.4;
 	if (animationSpeed >= 1) {
@@ -169,26 +164,35 @@ void GameObject::animate()
 	}*/
 }
 
-void GameObject::AddComponent(IObjectComponent *oc)
+
+void GameObject::SetMesh(Mesh * m)
 {
-	if (oc == nullptr) {
-		return;
-	}
-	std::string cname = oc->GetName();
-	if (cname == "mesh") {
-		mesh = dynamic_cast<Mesh*>(oc);
-		animatedMesh = new Mesh();
-		for (auto v : mesh->GetVertexesRef()) {
-			animatedMesh->addVertex(v);
-		}
-		animatedMesh->SetTexture(mesh->GetTexture());
-	}
-	if (cname == "rigid_body") {
-		rigidBody = dynamic_cast<RigidBody*>(oc);
-	}
-	if (cname == "animations") {
-		animations = dynamic_cast<Animations*>(oc);
-	}
+	mesh = m;
+}
+
+void GameObject::SetRigidBody(RigidBody * rb)
+{
+	rigidBody = rb;
+}
+
+void GameObject::SetAnimatedMesh(AnimatedMesh * am)
+{
+	animatedMesh = am;
+}
+
+void GameObject::StopAnimation()
+{
+	animatedMesh->StopAnimation();
+}
+
+void GameObject::StartAnimation(std::string aname)
+{
+	animatedMesh->BeginAnimation(aname);
+}
+
+std::string GameObject::GetName()
+{
+	return name;
 }
 
 void MoveUnitCommand::Update()

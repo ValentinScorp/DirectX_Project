@@ -8,6 +8,8 @@ Scene::Scene()
 
 void Scene::Initialize(Renderer *r, ObjectFactory *of)
 {
+	tmpRun = 0;
+
 	if (of == nullptr) {
 		throw - 1;
 	}
@@ -25,20 +27,20 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 
 	GameObject *man = smaLoader.load("Cube.002.sma");	
 	RigidBody* manBody = new RigidBody();
-	man->AddComponent(manBody);
-
-	//GameObject *arrow = smaLoader.load("arrow.sma");
-	//RigidBody* arrowBody = new RigidBody();
-	//arrow->AddComponent(arrowBody);
+	man->SetRigidBody(manBody);
+	
+	GameObject *arrow = smaLoader.load("arrow.sma");
+	RigidBody* arrowBody = new RigidBody();
+	arrow->SetRigidBody(arrowBody);
 
 	if (man != nullptr)
 		objects.push_back(man);
 
-	//if (arrow != nullptr)
-	//	objects.push_back(arrow);
+	if (arrow != nullptr)
+		objects.push_back(arrow);
 	
 	renderer->AddGameObject(man);
-	//renderer->AddGameObject(arrow);
+	renderer->AddGameObject(arrow);
 
 	renderer->AllocateVideoMemory();
 }
@@ -56,6 +58,12 @@ void Scene::OnMessage(Message mes)
 			}
 		}
 	}
+
+	if (mes.type == "user_input" && mes.name == "a") {
+		tmpRun = !tmpRun;
+		GameObject *go = GetGameObject("Cube.002");
+		tmpRun ? go->StartAnimation("Walk") : go->StopAnimation();
+	}
 }
 
 void Scene::UpdateUnits(float dt)
@@ -68,6 +76,16 @@ void Scene::UpdateUnits(float dt)
 Camera * Scene::GetActiveCamera()
 {
 	return camera;
+}
+
+GameObject * Scene::GetGameObject(std::string oname)
+{
+	for (auto go : objects) {
+		if (go->GetName() == oname) {
+			return go;
+		}
+	}
+	return nullptr;
 }
 
 void Scene::Destroy()

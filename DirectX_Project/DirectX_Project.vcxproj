@@ -146,7 +146,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Animations.cpp" />
+    <ClCompile Include="AnimatedMesh.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="DirectX_Project.cpp" />
@@ -163,7 +163,7 @@
     <ClCompile Include="UserInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animations.h" />
+    <ClInclude Include="AnimatedMesh.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="GameObject.h" />

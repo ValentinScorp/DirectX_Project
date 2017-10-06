@@ -1,13 +1,8 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <d3dx9.h>
-
 #include "Mesh.h"
-#include "IObjectComponent.h"
 
-class Animations : public IObjectComponent
+class AnimatedMesh : public Mesh
 {
 public:
 	class Bone
@@ -72,7 +67,7 @@ public:
 
 	public:
 		Animation(std::string n)
-			: name(n){}
+			: name(n) {}
 		~Animation() {}
 
 		void AddKeyframe(Keyframe kf) {
@@ -84,23 +79,43 @@ public:
 		Keyframe * GetKeyframe(size_t id) {
 			return &keyframes[id];
 		}
+
+		size_t GetKeyframesNum() {
+			return keyframes.size();
+		}
 	};
+
 private:
+	std::vector<DxVertex> vertexes;
 	std::vector<Bone*>bones;
 	std::vector<std::vector<Weight>> weights;
 
 	std::vector<Animation*> animations;
-	
+
+	Animation *currentAnimation;
+
+	size_t currentFrame;
+	size_t animCounter;
+
 public:
-	Animations();
-	~Animations();
+	AnimatedMesh();
+	~AnimatedMesh();
 
 	void AddBone(D3DXVECTOR3 p, D3DXVECTOR3 r);
 	Bone* GetBone(size_t id);
 	size_t GetBonesNum();
 	void AddVertexWeights(std::vector<Weight> w);
 	void AddAnimation(Animation *anim);	
-	void AnimateMesh(Mesh *m_out, Mesh *m_in, std::string aname, int frame);
+	
+	virtual void addVertex(D3DXVECTOR3 pos, D3DXVECTOR3 nor, D3DXVECTOR2 uv);
+	virtual void addVertex(DxVertex ver);
+	void UpdateAnimation(float dt);
+	void BeginAnimation(std::string aname);
+	void StopAnimation();
+
+	size_t GetVertexesNum();
+	size_t GetVertexSize();
+	DxVertex* GetVertexes();
 
 private:
 	Animation* getAnimation(std::string aname);

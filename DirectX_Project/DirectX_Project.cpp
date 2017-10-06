@@ -140,6 +140,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case VK_ESCAPE:
 			PostQuitMessage(0);
 			break;
+		case 'A':
+			userInput->SendMessage(Message("user_input", "a", xPos, yPos, 0));
+			break;
 		}
 		break;
 	case WM_MOUSEWHEEL:

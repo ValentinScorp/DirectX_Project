@@ -60,7 +60,7 @@
     <ClCompile Include="RigidBody.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="Animations.cpp">
+    <ClCompile Include="AnimatedMesh.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,7 +110,7 @@
     <ClInclude Include="RigidBody.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Animations.h">
+    <ClInclude Include="AnimatedMesh.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
