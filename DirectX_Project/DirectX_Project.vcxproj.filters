@@ -104,9 +104,6 @@
     <ClInclude Include="Mesh.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="IObjectComponent.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="RigidBody.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>

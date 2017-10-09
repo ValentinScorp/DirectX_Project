@@ -82,20 +82,11 @@ void GameObject::SetCommand(UnitCommand * com)
 		command = 0;
 	}
 	command = com;
+	animatedMesh->BeginAnimation(command->GetAnimationName());
 }
 
 void GameObject::Update(float dt)
 {
-	if (command != 0) {
-		if (command->IsComplete()) {
-			delete command;
-			command = 0;
-		}
-		else {
-			command->Update();
-		}		
-	}
-
 	animationSpeed += 1;
 	if (animationSpeed >= 1) {
 		animationSpeed = 0;
@@ -105,63 +96,27 @@ void GameObject::Update(float dt)
 		animationFrame = 0;
 	}
 
+	if (command != 0) {
+		if (command->IsComplete()) {
+			delete command;
+			command = 0;
+			animatedMesh->StopAnimation();
+		}
+		else {
+			command->Update();			
+			animatedMesh->UpdateAnimation(1);
+		}
+	}
+
+	
+
 	//animations->AnimateMesh(animatedMesh, mesh, "Walk", animationFrame);
-	animatedMesh->UpdateAnimation(1);
+
+	
 }
 
 void GameObject::animate()
 {
-	/*
-	animationSpeed += 0.4;
-	if (animationSpeed >= 1) {
-		animationSpeed = 0;
-		animationFrame++;
-	}
-	if (animationFrame >= 31) {
-		animationFrame = 0;
-	}
-
-	Animation *a = animations[2];
-
-	std::vector<Bone> bones;
-	for (int i = 0; i < a->GetKeyframeNum(); i++) {
-		Bone b;
-		b.position = a->GetKeyframe(animationFrame).positions[i];
-		b.rotation = a->GetKeyframe(animationFrame).rotations[i];
-		bones.push_back(b);
-	}
-
-	for (int i = 0; i < vertPositionsInit.size(); i++) {
-		D3DXVECTOR3 v((float*)&vertPositionsInit[i]);
-		std::vector<Weight> *weights = &vertexWeights[i];		
-		
-		D3DXVECTOR3 finalVecPositin(0.0f, 0.0f, 0.0f);
-
-		D3DXVECTOR3 vertPos(v);
-		D3DXMATRIX bonemat;
-		D3DXMATRIX deformbonemat;
-		D3DXMatrixIdentity(&deformbonemat);
-		
-		for (int j = 0; j < weights->size(); j++) {			
-			Bone* b = (*weights)[j].bone;
-			float weight = (*weights)[j].weight;
-			if (b != nullptr) {				
-				D3DXMatrixInverse(&bonemat, 0, &b->GetLocalToWorldMatrix());
-				deformbonemat = bones[b->index].GetLocalToWorldMatrix();
-				
-				vertPos = v;				
-				D3DXVec3TransformCoord(&vertPos, &vertPos, &bonemat);					
-				D3DXVec3TransformCoord(&vertPos, &vertPos, &deformbonemat);
-				vertPos *= weight;
-
-				finalVecPositin += vertPos;								
-			}
-		}			
-		
-		vertexes[i].position.x = finalVecPositin.x;
-		vertexes[i].position.y = finalVecPositin.y;
-		vertexes[i].position.z = finalVecPositin.z;
-	}*/
 }
 
 
@@ -195,14 +150,23 @@ std::string GameObject::GetName()
 	return name;
 }
 
+MoveUnitCommand::MoveUnitCommand(GameObject *go, D3DXVECTOR3 dest)
+	: UnitCommand(go, "Walk"), destination(dest), speed(0.1)
+{
+	//orientationVector = destination - go->GetPosition();
+	orientationVector = go->GetPosition() - destination;
+	D3DXVec3Normalize(&orientationVector, &orientationVector);
+}
+
 void MoveUnitCommand::Update()
 {
 	if (complete == 1) {
 		return;
 	}
 
-	D3DXVECTOR3 delta = gameobject->GetPosition();
-	delta = destination - delta;
+	gameobject->GetRigidBody()->SetOrientationVector(orientationVector);
+
+	D3DXVECTOR3 delta = destination - gameobject->GetPosition();
 
 	float lengthToTarget = D3DXVec3Length(&delta);	
 	

@@ -54,6 +54,12 @@ void Scene::OnMessage(Message mes)
 				RayVector camRay = camera->GetVectorRay(mes.x, mes.y);
 				D3DXVECTOR3 intersection = terrain->GetTerrainRenderer()->GetTerraneIntersection(camRay);
 								
+				go->SetPosition(intersection);
+			}
+			if (go->name == "Cube.002") {
+				RayVector camRay = camera->GetVectorRay(mes.x, mes.y);
+				D3DXVECTOR3 intersection = terrain->GetTerrainRenderer()->GetTerraneIntersection(camRay);
+
 				go->SetCommand(new MoveUnitCommand(go, intersection));
 			}
 		}

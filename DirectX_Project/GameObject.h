@@ -17,32 +17,38 @@ struct VertexData {
 };
 
 class UnitCommand {
-public:	
-	~UnitCommand(){}
+protected:
+	GameObject *gameobject;
+	std::string animationName;
+	bool complete;
 
-	virtual bool IsComplete() = 0;
+public:	
+	
+	UnitCommand(GameObject *go, std::string aname)
+		: gameobject(go), animationName(aname), complete(0) {}
+	~UnitCommand(){}
+	
 	virtual void Update() = 0;
+	
+	bool IsComplete() {
+		return complete;
+	}
+	std::string GetAnimationName() {
+		return animationName;
+	}
 };
 
 class MoveUnitCommand : public UnitCommand {
 private:
-
-	GameObject *gameobject;
-	D3DXVECTOR3 destination;
-	bool complete;
-		
+	D3DXVECTOR3 orientationVector;
+	D3DXVECTOR3 destination;		
 	float speed;
+
 public:
-	MoveUnitCommand(GameObject *go, D3DXVECTOR3 dest) 
-		:gameobject(go), destination(dest), complete(0), speed(0.1) {}
-	
+	MoveUnitCommand(GameObject *go, D3DXVECTOR3 dest);	
 	~MoveUnitCommand(){}
 
-	void Update();
-
-	bool IsComplete() {
-		return complete;
-	}
+	void Update();	
 };
 
 class GameObject

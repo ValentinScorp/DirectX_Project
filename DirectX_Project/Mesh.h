@@ -3,8 +3,6 @@
 #include <vector>
 #include <d3dx9.h>
 
-#include "IObjectComponent.h"
-
 class DxVertex {
 public:
 	DxVertex() {}
@@ -15,7 +13,7 @@ public:
 	D3DXVECTOR2 uv;
 };
 
-class Mesh : public IObjectComponent
+class Mesh
 {
 protected:
 	std::vector<DxVertex> vertexes;

@@ -167,7 +167,6 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="IObjectComponent.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="ObjectFactory.h" />

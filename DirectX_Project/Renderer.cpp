@@ -218,22 +218,11 @@ void Renderer::Draw()
 	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
 	pDevice->SetIndices(i_buffer);
 
-	//index += 0.01f;
-	D3DXMATRIX matRotateZ;
-	D3DXMATRIX matTransl;
-	D3DXMATRIX matTransform;
-	D3DXMatrixIdentity(&matTransform);	
-	D3DXMatrixRotationZ(&matRotateZ, index);
-	//D3DXMatrixTranslation(&matTransl, 3.0f, 0.0f, 0.0f);
 	int vertexNum = 0;	
 	
 	for (auto ro : robjects) {
-		D3DXVECTOR3 rObjPos = ro->rbody->GetPosition();
-		D3DXMatrixTranslation(&matTransl, rObjPos.x, rObjPos.y, rObjPos.z);
-		
-		matTransform = matRotateZ * matTransl;
-
-		pDevice->SetTransform(D3DTS_WORLD, &(matTransform));
+		D3DXMATRIX matTransform = ro->rbody->GetTransformationMatrix();;
+		pDevice->SetTransform(D3DTS_WORLD, &matTransform);
 		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
 		pDevice->SetFVF(CUSTOMFVF);
