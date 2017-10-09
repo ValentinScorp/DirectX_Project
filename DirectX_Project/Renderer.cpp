@@ -209,13 +209,27 @@ void Renderer::Draw()
 	line_vertices[1].y = camera->GetPosition().y;
 	line_vertices[1].z = camera->GetPosition().z;
 
-	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
 	pDevice->SetRenderState(D3DRS_COLORVERTEX, true);
 	pDevice->SetRenderState(D3DRS_LIGHTING, false);
+
 	pDevice->SetFVF(line_fvf);
 	pDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, line_vertices, sizeof(line_vertex));
 
 	// -----------
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+
+	pDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+
+	pDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 0);
+	pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	pDevice->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);	
+	pDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);	
+	
 	pDevice->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
 	pDevice->SetIndices(i_buffer);
 
@@ -225,8 +239,7 @@ void Renderer::Draw()
 		D3DXMATRIX matTransform = ro->rbody->GetTransformationMatrix();;
 		pDevice->SetTransform(D3DTS_WORLD, &matTransform);
 		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
-
-		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+				
 		pDevice->SetFVF(CUSTOMFVF);		
 
 		VOID *pVoid;				

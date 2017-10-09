@@ -8,15 +8,15 @@
 
 struct TERRAINVERTEX {
 	FLOAT X, Y, Z;
-	D3DVECTOR NORMAL;
-	FLOAT    tu, tv;
+	FLOAT    tu0, tv0;
+	FLOAT    tu1, tv1;
 };
-#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)
+#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_TEX0 | D3DFVF_TEX1)
 
 struct TerrainVertexData {
 	D3DXVECTOR3 position;
-	D3DXVECTOR3 normal;
-	D3DXVECTOR2 uv;
+	D3DXVECTOR2 uv0;
+	D3DXVECTOR2 uv1;
 };
 
 class Triangle {

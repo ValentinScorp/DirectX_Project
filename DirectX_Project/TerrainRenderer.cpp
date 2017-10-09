@@ -28,13 +28,16 @@ void TerrainRenderer::Create(int w, int h, int tl)
 	*/
 
 	TerrainVertexData tvdA, tvdB, tvdC, tvdD;
-	tvdA.normal.x = 0;	tvdA.normal.y = 0; tvdA.normal.z = 1;
+	/*tvdA.normal.x = 0;	tvdA.normal.y = 0; tvdA.normal.z = 1;
 	tvdB.normal.x = 0;	tvdB.normal.y = 0; tvdB.normal.z = 1;
 	tvdC.normal.x = 0;	tvdC.normal.y = 0; tvdC.normal.z = 1;
 	tvdD.normal.x = 0;	tvdD.normal.y = 0; tvdD.normal.z = 1;
+	*/
+	tvdA.uv0.x = 0; tvdA.uv0.y = 1;			tvdB.uv0.x = 1; tvdB.uv0.y = 1;	
+	tvdD.uv0.x = 0; tvdD.uv0.y = 0;			tvdC.uv0.x = 1; tvdC.uv0.y = 0;
 
-	tvdA.uv.x = 0; tvdA.uv.y = 1;			tvdB.uv.x = 1; tvdB.uv.y = 1;	
-	tvdD.uv.x = 0; tvdD.uv.y = 0;			tvdC.uv.x = 1; tvdC.uv.y = 0;
+	tvdA.uv1.x = 0; tvdA.uv1.y = 1;			tvdB.uv1.x = 1; tvdB.uv1.y = 1;
+	tvdD.uv1.x = 0; tvdD.uv1.y = 0;			tvdC.uv1.x = 1; tvdC.uv1.y = 0;
 
 	tvdA.position.z = 0;
 	tvdB.position.z = 0;
@@ -110,25 +113,28 @@ void TerrainRenderer::Render()
 	dxDevice->SetTransform(D3DTS_WORLD, &matTransform);
 	dxDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 	
-	dxDevice->SetTexture(0, grassTex);
-	dxDevice->SetTexture(1, mudTex);
-	dxDevice->SetFVF(TERRAINFVF);
+	dxDevice->SetTexture(0, mudTex);
+	dxDevice->SetTexture(1, grassTex);
+	
 	
 	dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
-	
+
+	dxDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
 	dxDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	dxDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	dxDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-	dxDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	dxDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+		
+	dxDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 0);
+	dxDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
+	dxDevice->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	dxDevice->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
+	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_CURRENT);		
+	
 
-	dxDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-	dxDevice->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);	
-	dxDevice->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);	
-	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-
+	dxDevice->SetFVF(TERRAINFVF);
 	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TERRAINVERTEX));
 	HRESULT hr = dxDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, numVertexes / 3);
 
