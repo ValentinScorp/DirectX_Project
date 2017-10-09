@@ -209,6 +209,7 @@ void Renderer::Draw()
 	line_vertices[1].y = camera->GetPosition().y;
 	line_vertices[1].z = camera->GetPosition().z;
 
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
 	pDevice->SetRenderState(D3DRS_COLORVERTEX, true);
 	pDevice->SetRenderState(D3DRS_LIGHTING, false);
 	pDevice->SetFVF(line_fvf);
@@ -225,7 +226,8 @@ void Renderer::Draw()
 		pDevice->SetTransform(D3DTS_WORLD, &matTransform);
 		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 
-		pDevice->SetFVF(CUSTOMFVF);
+		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+		pDevice->SetFVF(CUSTOMFVF);		
 
 		VOID *pVoid;				
 		if (ro != nullptr) {

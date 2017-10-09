@@ -126,6 +126,12 @@
     <Image Include="roman_tex_high.png">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="grass.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="mud.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="cube.sma">

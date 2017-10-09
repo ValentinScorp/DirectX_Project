@@ -33,7 +33,8 @@ private:
 	LPDIRECT3DVERTEXBUFFER9 dxVertexBuffer = nullptr;
 
 	int numVertexes = 0;
-	IDirect3DTexture9* texture = nullptr;
+	IDirect3DTexture9* mudTex = nullptr;
+	IDirect3DTexture9* grassTex = nullptr;
 
 	std::vector <Triangle> triangles;
 
