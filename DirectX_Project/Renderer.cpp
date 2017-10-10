@@ -189,7 +189,7 @@ void Renderer::Draw()
 	D3DXMATRIX matView = camera->GetTransformMatrix();
 
 	pDevice->SetTransform(D3DTS_VIEW, &matView);
-
+	
 	D3DXMATRIX matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(camera->GetFovy()), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, camera->GetNearPlane(), camera->GetFarPlane());	
 	pDevice->SetTransform(D3DTS_PROJECTION, &matProjection);

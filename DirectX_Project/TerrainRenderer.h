@@ -8,15 +8,13 @@
 
 struct TERRAINVERTEX {
 	FLOAT X, Y, Z;
-	FLOAT    tu0, tv0;
-	FLOAT    tu1, tv1;
+	FLOAT    tu0, tv0;	
 };
-#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_TEX0 | D3DFVF_TEX1)
+#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_TEX1)
 
 struct TerrainVertexData {
 	D3DXVECTOR3 position;
-	D3DXVECTOR2 uv0;
-	D3DXVECTOR2 uv1;
+	D3DXVECTOR2 uv0;	
 };
 
 class Triangle {
@@ -38,6 +36,10 @@ private:
 
 	std::vector <Triangle> triangles;
 
+	ID3DXEffect* terrainShader = nullptr;
+	Camera *camera = nullptr;
+	D3DXMATRIX cameraMatrix;
+
 public:
 	TerrainRenderer(IDirect3DDevice9* dev);
 	~TerrainRenderer();
@@ -45,6 +47,7 @@ public:
 	void Create(int w, int h, int tl);
 	void Render();
 	void Destroy();
+	void SetCamera(Camera *cam);
 
 	D3DXVECTOR3 GetTerraneIntersection(RayVector rv);
 	bool IntersectRayTriangle(RayVector ray, Triangle triangle, D3DXVECTOR3 &intersectionVertex);

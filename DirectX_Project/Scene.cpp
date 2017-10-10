@@ -13,16 +13,17 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	if (of == nullptr) {
 		throw - 1;
 	}
+	
+	camera = new Camera(D3DXVECTOR3(0, -10, 15), D3DXVECTOR3(-45, 180, 0));
 
 	terrain = new Terrain(5, 2, 10.0f);
 	terrain->CreateGraphics(r->GetTerrainRenderer());
 
+	r->GetTerrainRenderer()->SetCamera(camera);
+
 	objectFactory = of;
 	renderer = r;
 	
-
-	camera = new Camera(D3DXVECTOR3(0, -10, 15), D3DXVECTOR3(-45, 180, 0));
-
 	SmaLoader smaLoader;
 
 	GameObject *man = smaLoader.load("Cube.002.sma");	

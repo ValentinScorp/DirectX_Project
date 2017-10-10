@@ -36,8 +36,8 @@ void TerrainRenderer::Create(int w, int h, int tl)
 	tvdA.uv0.x = 0; tvdA.uv0.y = 1;			tvdB.uv0.x = 1; tvdB.uv0.y = 1;	
 	tvdD.uv0.x = 0; tvdD.uv0.y = 0;			tvdC.uv0.x = 1; tvdC.uv0.y = 0;
 
-	tvdA.uv1.x = 0; tvdA.uv1.y = 1;			tvdB.uv1.x = 1; tvdB.uv1.y = 1;
-	tvdD.uv1.x = 0; tvdD.uv1.y = 0;			tvdC.uv1.x = 1; tvdC.uv1.y = 0;
+	//tvdA.uv1.x = 0; tvdA.uv1.y = 1;			tvdB.uv1.x = 1; tvdB.uv1.y = 1;
+	//tvdD.uv1.x = 0; tvdD.uv1.y = 0;			tvdC.uv1.x = 1; tvdC.uv1.y = 0;
 
 	tvdA.position.z = 0;
 	tvdB.position.z = 0;
@@ -101,9 +101,24 @@ void TerrainRenderer::Create(int w, int h, int tl)
 	dxVertexBuffer->Lock(0, 0, (void**)&pVoid, 0);
 	memcpy(pVoid, &vertexes[0], sizeof(TERRAINVERTEX) * numVertexes);
 	dxVertexBuffer->Unlock();
-
 	D3DXCreateTextureFromFile(dxDevice, L"mud.png", &mudTex);
 	D3DXCreateTextureFromFile(dxDevice, L"grass.png", &grassTex);
+
+	HRESULT hr;
+	ID3DXBuffer *pErrors = nullptr;
+	hr = D3DXCreateBuffer(1024, &pErrors);
+
+	hr = D3DXCreateEffectFromFile(dxDevice, L"TerrainShader.fx", NULL, NULL, D3DXFX_NOT_CLONEABLE | D3DXSHADER_DEBUG, NULL, &terrainShader, &pErrors);
+
+	if (FAILED(hr)) {
+		// Output shader compilation errors to the shell:
+		CHAR* pErrorStr = (CHAR*)pErrors->GetBufferPointer();
+		printf("%s\n", pErrorStr);
+	}
+	if (pErrors) {
+		pErrors->Release();
+		pErrors = nullptr;
+	}	
 }
 
 void TerrainRenderer::Render()
@@ -112,11 +127,21 @@ void TerrainRenderer::Render()
 	D3DXMatrixIdentity(&matTransform);
 	dxDevice->SetTransform(D3DTS_WORLD, &matTransform);
 	dxDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
+
+	D3DXMatrixIdentity(&cameraMatrix);
+
+	D3DXMATRIX matView = camera->GetTransformMatrix();
+	D3DXMATRIX matProjection;
+	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(camera->GetFovy()), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, camera->GetNearPlane(), camera->GetFarPlane());
 	
-	dxDevice->SetTexture(0, mudTex);
+	cameraMatrix = /*mWorld **/ matView * matProjection;
+	
+	terrainShader->SetMatrix("g_mWorldViewProjection", &cameraMatrix);
+	terrainShader->SetTexture("g_Texture", mudTex);
+
+/*	dxDevice->SetTexture(0, mudTex);
 	dxDevice->SetTexture(1, grassTex);
-	
-	
+		
 	dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
@@ -132,17 +157,24 @@ void TerrainRenderer::Render()
 	dxDevice->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
 	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_CURRENT);		
+*/	
 	
+
+//	terrainShader->SetMatrix("g_mWorldViewProjection", &mWorldViewProjection) );
 
 	dxDevice->SetFVF(TERRAINFVF);
 	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TERRAINVERTEX));
-	HRESULT hr = dxDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, numVertexes / 3);
 
-	if (hr != D3D_OK) {	
-		//std::wstring errorString = DXGetErrorString(hr);
-		//std::wstring errorDescr = DXGetErrorDescription(hr);
-		int i = 0;
+	terrainShader->SetTechnique("RenderTerrain");
+
+	UINT passesNum = 0;
+	terrainShader->Begin(&passesNum, 0);
+	for (UINT i = 0; i < passesNum; i++) {
+		terrainShader->BeginPass(i);
+		HRESULT hr = dxDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, numVertexes / 3);
+		terrainShader->EndPass();
 	}
+	terrainShader->End();	
 }
 
 D3DXVECTOR3 TerrainRenderer::GetTerraneIntersection(RayVector rv)
@@ -234,4 +266,14 @@ void TerrainRenderer::Destroy()
 		dxVertexBuffer->Release();
 		dxVertexBuffer = NULL;
 	}
+
+	if (terrainShader) {
+		terrainShader->Release();
+		terrainShader = nullptr;
+	}
+}
+
+void TerrainRenderer::SetCamera(Camera * cam)
+{
+	camera = cam;
 }
