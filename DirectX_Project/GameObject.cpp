@@ -151,7 +151,7 @@ std::string GameObject::GetName()
 }
 
 MoveUnitCommand::MoveUnitCommand(GameObject *go, D3DXVECTOR3 dest)
-	: UnitCommand(go, "Walk"), destination(dest), speed(0.1)
+	: UnitCommand(go, "Walk"), destination(dest), speed(0.3)
 {
 	//orientationVector = destination - go->GetPosition();
 	orientationVector = go->GetPosition() - destination;

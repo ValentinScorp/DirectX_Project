@@ -135,6 +135,15 @@
     <Image Include="mud.png">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="alpha.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="alphaRoad.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="sand.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="cube.sma">

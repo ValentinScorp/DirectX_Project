@@ -7,7 +7,7 @@ Camera::Camera(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	rotation = rot;
 	fovy = 45;
 	nearPlane = 1;
-	farPlane = 100;
+	farPlane = 200;
 }
 
 

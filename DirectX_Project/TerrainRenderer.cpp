@@ -101,8 +101,9 @@ void TerrainRenderer::Create(int w, int h, int tl)
 	dxVertexBuffer->Lock(0, 0, (void**)&pVoid, 0);
 	memcpy(pVoid, &vertexes[0], sizeof(TERRAINVERTEX) * numVertexes);
 	dxVertexBuffer->Unlock();
-	D3DXCreateTextureFromFile(dxDevice, L"mud.png", &mudTex);
+	D3DXCreateTextureFromFile(dxDevice, L"sand.png", &sandTex);
 	D3DXCreateTextureFromFile(dxDevice, L"grass.png", &grassTex);
+	D3DXCreateTextureFromFile(dxDevice, L"alphaRoad.png", &alpha);
 
 	HRESULT hr;
 	ID3DXBuffer *pErrors = nullptr;
@@ -137,7 +138,9 @@ void TerrainRenderer::Render()
 	cameraMatrix = /*mWorld **/ matView * matProjection;
 	
 	terrainShader->SetMatrix("g_mWorldViewProjection", &cameraMatrix);
-	terrainShader->SetTexture("g_Texture", mudTex);
+	terrainShader->SetTexture("g_Texture1", sandTex);
+	terrainShader->SetTexture("g_Texture2", grassTex);
+	terrainShader->SetTexture("g_Alpha", alpha);
 
 /*	dxDevice->SetTexture(0, mudTex);
 	dxDevice->SetTexture(1, grassTex);
@@ -253,15 +256,19 @@ bool TerrainRenderer::IntersectRayTriangle(RayVector ray, Triangle triangle, D3D
 
 void TerrainRenderer::Destroy()
 {	
-	if (mudTex) {
-		mudTex->Release();
-		mudTex = nullptr;
+	if (sandTex) {
+		sandTex->Release();
+		sandTex = nullptr;
 	}
 	if (grassTex) {
 		grassTex->Release();
 		grassTex = nullptr;
 	}
-	
+	if (alpha) {
+		alpha->Release();
+		alpha = nullptr;
+	}
+
 	if (dxVertexBuffer) {
 		dxVertexBuffer->Release();
 		dxVertexBuffer = NULL;
