@@ -33,8 +33,10 @@ void TerrainRenderer::Create(int w, int h, int tl)
 	tvdC.normal.x = 0;	tvdC.normal.y = 0; tvdC.normal.z = 1;
 	tvdD.normal.x = 0;	tvdD.normal.y = 0; tvdD.normal.z = 1;
 	*/
-	tvdA.uv0.x = 0; tvdA.uv0.y = 1;			tvdB.uv0.x = 1; tvdB.uv0.y = 1;	
-	tvdD.uv0.x = 0; tvdD.uv0.y = 0;			tvdC.uv0.x = 1; tvdC.uv0.y = 0;
+	tvdA.uv0.x = 0; tvdA.uv0.y = 0;			
+	tvdB.uv0.x = 0; tvdB.uv0.y = 1;	
+	tvdC.uv0.x = 1; tvdC.uv0.y = 1;
+	tvdD.uv0.x = 1; tvdD.uv0.y = 0;			
 
 	//tvdA.uv1.x = 0; tvdA.uv1.y = 1;			tvdB.uv1.x = 1; tvdB.uv1.y = 1;
 	//tvdD.uv1.x = 0; tvdD.uv1.y = 0;			tvdC.uv1.x = 1; tvdC.uv1.y = 0;
@@ -103,7 +105,9 @@ void TerrainRenderer::Create(int w, int h, int tl)
 	dxVertexBuffer->Unlock();
 	D3DXCreateTextureFromFile(dxDevice, L"sand.png", &sandTex);
 	D3DXCreateTextureFromFile(dxDevice, L"grass.png", &grassTex);
-	D3DXCreateTextureFromFile(dxDevice, L"alphaRoad.png", &alpha);
+	D3DXCreateTextureFromFile(dxDevice, L"rock.png", &rockTex);
+	D3DXCreateTextureFromFile(dxDevice, L"alphaSide.png", &alphaSide);
+	D3DXCreateTextureFromFile(dxDevice, L"alphaCorner.png", &alphaCorner);
 
 	HRESULT hr;
 	ID3DXBuffer *pErrors = nullptr;
@@ -135,35 +139,25 @@ void TerrainRenderer::Render()
 	D3DXMATRIX matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, D3DXToRadian(camera->GetFovy()), (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, camera->GetNearPlane(), camera->GetFarPlane());
 	
-	cameraMatrix = /*mWorld **/ matView * matProjection;
+	cameraMatrix = matView * matProjection;
 	
 	terrainShader->SetMatrix("g_mWorldViewProjection", &cameraMatrix);
 	terrainShader->SetTexture("g_Texture1", sandTex);
 	terrainShader->SetTexture("g_Texture2", grassTex);
-	terrainShader->SetTexture("g_Alpha", alpha);
+	terrainShader->SetTexture("g_Texture3", rockTex);
+	terrainShader->SetTexture("g_AlphaCorner", alphaCorner);
+	terrainShader->SetTexture("g_AlphaSide", alphaSide);
 
-/*	dxDevice->SetTexture(0, mudTex);
-	dxDevice->SetTexture(1, grassTex);
-		
-	dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	texBIndex = 0;
+	texFIndex = 1;
+	texAIndex = 1;
+	texArIndex = 3;
 
-	dxDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-	dxDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-	dxDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	dxDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-		
-	dxDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 0);
-	dxDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
-	dxDevice->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	dxDevice->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
-	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-	dxDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_CURRENT);		
-*/	
-	
+	terrainShader->SetInt("g_TexBackIndex", texBIndex);
+	terrainShader->SetInt("g_TexFrontIndex", texFIndex);
+	terrainShader->SetInt("g_AlghaIndex", texAIndex);
+	terrainShader->SetInt("g_AlghaRotationIndex", texArIndex);
 
-//	terrainShader->SetMatrix("g_mWorldViewProjection", &mWorldViewProjection) );
 
 	dxDevice->SetFVF(TERRAINFVF);
 	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TERRAINVERTEX));
@@ -264,9 +258,17 @@ void TerrainRenderer::Destroy()
 		grassTex->Release();
 		grassTex = nullptr;
 	}
-	if (alpha) {
-		alpha->Release();
-		alpha = nullptr;
+	if (rockTex) {
+		rockTex->Release();
+		rockTex = nullptr;
+	}
+	if (alphaSide) {
+		alphaSide->Release();
+		alphaSide = nullptr;
+	}
+	if (alphaCorner) {
+		alphaCorner->Release();
+		alphaCorner = nullptr;
 	}
 
 	if (dxVertexBuffer) {

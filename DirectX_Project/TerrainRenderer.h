@@ -33,14 +33,24 @@ private:
 	int numVertexes = 0;
 	IDirect3DTexture9* sandTex = nullptr;
 	IDirect3DTexture9* grassTex = nullptr;
-	IDirect3DTexture9* alpha = nullptr;
+	IDirect3DTexture9* rockTex = nullptr;
+	
+	IDirect3DTexture9* alphaSide = nullptr;
+	IDirect3DTexture9* alphaCorner = nullptr;
+
+	std::vector<IDirect3DTexture9*> terrainTextures;
+	std::vector<IDirect3DTexture9*> alphaTextures;
 
 	std::vector <Triangle> triangles;
 
 	ID3DXEffect* terrainShader = nullptr;
 	Camera *camera = nullptr;
 	D3DXMATRIX cameraMatrix;
-
+	
+	unsigned int texBIndex;
+	unsigned int texFIndex;
+	unsigned int texAIndex;
+	unsigned int texArIndex;
 public:
 	TerrainRenderer(IDirect3DDevice9* dev);
 	~TerrainRenderer();

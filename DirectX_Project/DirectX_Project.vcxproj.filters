@@ -144,6 +144,12 @@
     <Image Include="sand.png">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="rock.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="alphaCorner.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="cube.sma">

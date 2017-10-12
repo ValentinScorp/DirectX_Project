@@ -16,7 +16,7 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	
 	camera = new Camera(D3DXVECTOR3(0, -10, 15), D3DXVECTOR3(-45, 180, 0));
 
-	terrain = new Terrain(100, 100, 10.0f);
+	terrain = new Terrain(64, 64, 4.0f);
 	terrain->CreateGraphics(r->GetTerrainRenderer());
 
 	r->GetTerrainRenderer()->SetCamera(camera);
