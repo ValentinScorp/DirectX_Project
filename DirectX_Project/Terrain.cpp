@@ -35,12 +35,19 @@ void Terrain::CreateGraphics(TerrainRenderer * tr)
 	tr->Create(tp);
 }
 
-TerrainRenderer * Terrain::GetTerrainRenderer()
+D3DXVECTOR3 Terrain::GetTerraneIntersection(RayVector rv)
 {
-	return terrainRenderer;
-}
+	D3DXVECTOR3 intersection = { 0.0f, 0.0f, 0.0f };
 
-void Terrain::Clear()
-{
+	for (auto patch : patches) {
+		auto tiles = patch.GetTiles();
+		for (auto t : tiles) {
+			if (t.Intersection(rv, intersection)) {
+				break;
+			}
+		}
+	}
+	
+	return intersection;	
 }
 

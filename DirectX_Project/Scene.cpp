@@ -53,13 +53,13 @@ void Scene::OnMessage(Message mes)
 			if (go->name == "Arrow") {
 
 				RayVector camRay = camera->GetVectorRay(mes.x, mes.y);
-				D3DXVECTOR3 intersection = terrain->GetTerrainRenderer()->GetTerraneIntersection(camRay);
+				D3DXVECTOR3 intersection = terrain->GetTerraneIntersection(camRay);
 								
 				go->SetPosition(intersection);
 			}
 			if (go->name == "Cube.002") {
 				RayVector camRay = camera->GetVectorRay(mes.x, mes.y);
-				D3DXVECTOR3 intersection = terrain->GetTerrainRenderer()->GetTerraneIntersection(camRay);
+				D3DXVECTOR3 intersection = terrain->GetTerraneIntersection(camRay);
 
 				go->SetCommand(new MoveUnitCommand(go, intersection));
 			}
@@ -106,7 +106,6 @@ void Scene::Destroy()
 	objects.clear();
 
 	if (terrain != nullptr) {
-		terrain->Clear();
 		delete terrain;
 	}
 }

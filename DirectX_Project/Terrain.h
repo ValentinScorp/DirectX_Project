@@ -9,8 +9,6 @@
 class Terrain
 {
 private:
-	std::vector <Triangle> triangles;
-
 	std::vector <TerrainPatch> patches;
 	TerrainRenderer *terrainRenderer = nullptr;
 	
@@ -23,8 +21,7 @@ public:
 	~Terrain();
 
 	void CreateGraphics(TerrainRenderer *tr);
-	TerrainRenderer* GetTerrainRenderer();
 
-	void Clear();
+	D3DXVECTOR3 GetTerraneIntersection(RayVector rv);
 };
 

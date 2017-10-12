@@ -24,7 +24,8 @@ void TerrainRenderer::Create(std::vector<TerrainPoint>& tpoints)
 		tv.tcoord2 = tp.alphaCo;
 		terrainVertexes.push_back(tv);
 	}
-	dxDevice->CreateVertexBuffer(terrainVertexes.size() * sizeof(TerrainVertexData), NULL, TERRAINFVF, D3DPOOL_MANAGED, &dxVertexBuffer, NULL);
+	numVertexes = terrainVertexes.size();
+	dxDevice->CreateVertexBuffer(numVertexes * sizeof(TerrainVertexData), NULL, TERRAINFVF, D3DPOOL_MANAGED, &dxVertexBuffer, NULL);
 	VOID* pVoid;
 	dxVertexBuffer->Lock(0, 0, (void**)&pVoid, 0);
 	memcpy(pVoid, &terrainVertexes[0], sizeof(TerrainVertexData) * numVertexes);
