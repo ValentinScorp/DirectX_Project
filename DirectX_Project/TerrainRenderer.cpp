@@ -12,96 +12,22 @@ TerrainRenderer::~TerrainRenderer()
 {
 }
 
-void TerrainRenderer::Create(int w, int h, int tl)
+void TerrainRenderer::Create(std::vector<TerrainPoint>& tpoints)
 {
-	int numTiles = w * h;
-	int numTri = numTiles * 2;
-	numVertexes = numTri * 3;
-
-	std::vector <TerrainVertexData> vertexes;
-
-	/*
-		^	B---C
-		|	|   |
-		y	A---D
-			x-->
-	*/
-
-	TerrainVertexData tvdA, tvdB, tvdC, tvdD;
-	/*tvdA.normal.x = 0;	tvdA.normal.y = 0; tvdA.normal.z = 1;
-	tvdB.normal.x = 0;	tvdB.normal.y = 0; tvdB.normal.z = 1;
-	tvdC.normal.x = 0;	tvdC.normal.y = 0; tvdC.normal.z = 1;
-	tvdD.normal.x = 0;	tvdD.normal.y = 0; tvdD.normal.z = 1;
-	*/
-	tvdA.uv0.x = 0; tvdA.uv0.y = 0;			
-	tvdB.uv0.x = 0; tvdB.uv0.y = 1;	
-	tvdC.uv0.x = 1; tvdC.uv0.y = 1;
-	tvdD.uv0.x = 1; tvdD.uv0.y = 0;			
-
-	//tvdA.uv1.x = 0; tvdA.uv1.y = 1;			tvdB.uv1.x = 1; tvdB.uv1.y = 1;
-	//tvdD.uv1.x = 0; tvdD.uv1.y = 0;			tvdC.uv1.x = 1; tvdC.uv1.y = 0;
-
-	tvdA.position.z = 0;
-	tvdB.position.z = 0;
-	tvdC.position.z = 0;
-	tvdD.position.z = 0;
-
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			tvdA.position.x = j * tl;	
-			tvdA.position.y = i * tl;
-
-			tvdB.position.x = j * tl;	
-			tvdB.position.y = i * tl + tl;
-
-			tvdC.position.x = j * tl + tl;
-			tvdC.position.y = i * tl + tl;
-
-			tvdD.position.x = j * tl + tl;
-			tvdD.position.y = i * tl;
-
-			vertexes.push_back(tvdA);
-			vertexes.push_back(tvdC);
-			vertexes.push_back(tvdB);
-			vertexes.push_back(tvdA);
-			vertexes.push_back(tvdD);
-			vertexes.push_back(tvdC);
-
-			Triangle triangle1, triangle2;
-			D3DXVECTOR3 posA, posB, posC, posD;
-			posA.x = tvdA.position.x;
-			posA.y = tvdA.position.y;			
-			posA.z = 0;
-
-			posB.x = tvdB.position.x;
-			posB.y = tvdB.position.y;
-			posB.z = 0;
-
-			posC.x = tvdC.position.x;
-			posC.y = tvdC.position.y;
-			posC.z = 0;
-
-			posD.x = tvdD.position.x;
-			posD.y = tvdD.position.y;
-			posD.z = 0;
-
-			triangle1.A = posA;
-			triangle1.B = posB;
-			triangle1.C = posC;
-
-			triangle2.A = posA;
-			triangle2.B = posC;
-			triangle2.C = posD;
-
-			triangles.push_back(triangle1);
-			triangles.push_back(triangle2);
-		}		
+	std::vector<TerrainVertexData> terrainVertexes;
+	for (auto tp : tpoints) {
+		TerrainVertexData tv;
+		tv.position = tp.position;
+		tv.normal = tp.normal;
+		tv.tcoord0 = tp.textureCo;
+		tv.tcoord1 = tp.textureCo;
+		tv.tcoord2 = tp.alphaCo;
+		terrainVertexes.push_back(tv);
 	}
-
-	dxDevice->CreateVertexBuffer(numVertexes * sizeof(TERRAINVERTEX), NULL, TERRAINFVF, D3DPOOL_MANAGED, &dxVertexBuffer, NULL);
+	dxDevice->CreateVertexBuffer(terrainVertexes.size() * sizeof(TerrainVertexData), NULL, TERRAINFVF, D3DPOOL_MANAGED, &dxVertexBuffer, NULL);
 	VOID* pVoid;
 	dxVertexBuffer->Lock(0, 0, (void**)&pVoid, 0);
-	memcpy(pVoid, &vertexes[0], sizeof(TERRAINVERTEX) * numVertexes);
+	memcpy(pVoid, &terrainVertexes[0], sizeof(TerrainVertexData) * numVertexes);
 	dxVertexBuffer->Unlock();
 	D3DXCreateTextureFromFile(dxDevice, L"sand.png", &sandTex);
 	D3DXCreateTextureFromFile(dxDevice, L"grass.png", &grassTex);
@@ -123,7 +49,7 @@ void TerrainRenderer::Create(int w, int h, int tl)
 	if (pErrors) {
 		pErrors->Release();
 		pErrors = nullptr;
-	}	
+	}
 }
 
 void TerrainRenderer::Render()
@@ -160,7 +86,7 @@ void TerrainRenderer::Render()
 
 
 	dxDevice->SetFVF(TERRAINFVF);
-	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TERRAINVERTEX));
+	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TerrainVertexData));
 
 	terrainShader->SetTechnique("RenderTerrain");
 

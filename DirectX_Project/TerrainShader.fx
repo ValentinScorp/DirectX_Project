@@ -68,37 +68,46 @@ float2 RotateUv(float2 in_uv, float degree) {
 
 struct VS_OUTPUT
 {
-	float4 position          : POSITION;
-	float2 texCoord          : TEXCOORD0;
+	float4 position : POSITION;
+	float4 normal	: NORMAL;
+	float2 texCoord0 : TEXCOORD0;
+	float2 texCoord1 : TEXCOORD1;
+	float2 texCoord2 : TEXCOORD2;
 };
 
 VS_OUTPUT RenderSceneVS(float4 inPosition : POSITION,
-						float2 inTexCoord : TEXCOORD0)
+						float4 inNormal : NORMAL,
+						float2 inTexCoord0 : TEXCOORD0,
+						float2 inTexCoord1 : TEXCOORD1,
+						float2 inTexCoord2 : TEXCOORD2)
 {	
 	VS_OUTPUT Out;
-	//inPosition.w = 1;
-	// Transform and output input position 
+	
 	Out.position = mul(inPosition, g_mWorldViewProjection);
+	Out.normal = mul(inNormal, g_mWorldViewProjection);
+	inNormal = normalize(inNormal);
 
-	float2 alphaUV = inTexCoord;
+	float2 alphaUV = inTexCoord2;
 
 	[flatten] switch (g_AlghaRotationIndex) {
 	case (0):
 		break;
 	case (1):
-		alphaUV = RotateUv(inTexCoord, 270);
+		alphaUV = RotateUv(inTexCoord2, 270);
 		break;
 	case (2):
-		alphaUV = RotateUv(inTexCoord, 180);		
+		alphaUV = RotateUv(inTexCoord2, 180);		
 		break;
 	case (3):
-		alphaUV = RotateUv(inTexCoord, 90);		
+		alphaUV = RotateUv(inTexCoord2, 90);		
 		break;
 	default:
 		break;
 	}
 
-	Out.texCoord = alphaUV;
+	Out.texCoord0 = inTexCoord0;
+	Out.texCoord1 = inTexCoord1;
+	Out.texCoord2 = alphaUV;
 
 	return Out;
 }
@@ -107,27 +116,31 @@ struct PS_OUTPUT
 {
 	float4 RGBColor : COLOR0;
 };
-
+/*
 struct PS_INPUT
 {	
-	float2 texCoord : TEXCOORD0;
+	float2 texCoord0 : TEXCOORD0;
+	float2 texCoord1 : TEXCOORD1;
+	float2 texCoord2 : TEXCOORD2;
 };
-
-float4 RenderScenePS(PS_INPUT i) : COLOR0
+*/
+float4 RenderScenePS(	float2 inTexCoord0 : TEXCOORD0,
+						float2 inTexCoord1 : TEXCOORD1,
+						float2 inTexCoord2 : TEXCOORD2) : COLOR0
 {
-	float4 color1 = tex2D(TextureSampler1, i.texCoord);
-	float4 color2 = tex2D(TextureSampler2, i.texCoord);
-	float4 alpha = tex2D(AlphaCornerSampler, i.texCoord);
+	float4 color1 = tex2D(TextureSampler1, inTexCoord0);
+	float4 color2 = tex2D(TextureSampler2, inTexCoord1);
+	float4 alpha = tex2D(AlphaCornerSampler, inTexCoord2);
 
 	[flatten] switch (g_TexBackIndex) {
 		case (0):
-			color1 = tex2D(TextureSampler1, i.texCoord);
+			color1 = tex2D(TextureSampler1, inTexCoord0);
 			break;
 		case (1):
-			color1 = tex2D(TextureSampler2, i.texCoord);
+			color1 = tex2D(TextureSampler2, inTexCoord0);
 			break;
 		case (2):
-			color1 = tex2D(TextureSampler3, i.texCoord);
+			color1 = tex2D(TextureSampler3, inTexCoord0);
 			break;
 		default:
 			break;
@@ -135,13 +148,13 @@ float4 RenderScenePS(PS_INPUT i) : COLOR0
 
 	[flatten] switch (g_TexFrontIndex) {
 		case (0):
-			color2 = tex2D(TextureSampler1, i.texCoord);
+			color2 = tex2D(TextureSampler1, inTexCoord1);
 			break;
 		case (1):
-			color2 = tex2D(TextureSampler2, i.texCoord);
+			color2 = tex2D(TextureSampler2, inTexCoord1);
 			break;
 		case (2):
-			color2 = tex2D(TextureSampler3, i.texCoord);
+			color2 = tex2D(TextureSampler3, inTexCoord1);
 			break;
 		default:
 			break;
@@ -149,10 +162,10 @@ float4 RenderScenePS(PS_INPUT i) : COLOR0
 	
 	[flatten] switch (g_AlghaIndex) {
 		case (0):
-			alpha = tex2D(AlphaSideSampler, i.texCoord);
+			alpha = tex2D(AlphaSideSampler, inTexCoord2);
 			break;
 		case (1):
-			alpha = tex2D(AlphaCornerSampler, i.texCoord);
+			alpha = tex2D(AlphaCornerSampler, inTexCoord2);
 			break;		
 		default:
 			break;

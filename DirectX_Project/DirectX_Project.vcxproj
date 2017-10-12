@@ -183,7 +183,9 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SmaLoader.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TerrainPatch.cpp" />
     <ClCompile Include="TerrainRenderer.cpp" />
+    <ClCompile Include="TerrainTile.cpp" />
     <ClCompile Include="UserInput.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -200,7 +202,9 @@
     <ClInclude Include="SmaLoader.h" />
     <ClInclude Include="sma_spec.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TerrainPatch.h" />
     <ClInclude Include="TerrainRenderer.h" />
+    <ClInclude Include="TerrainTile.h" />
     <ClInclude Include="UserInput.h" />
   </ItemGroup>
   <ItemGroup>

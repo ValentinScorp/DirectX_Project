@@ -5,16 +5,16 @@
 #include <vector>
 
 #include "Camera.h"
+#include "TerrainTile.h"
 
-struct TERRAINVERTEX {
-	FLOAT X, Y, Z;
-	FLOAT    tu0, tv0;	
-};
-#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_TEX1)
+#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX3)
 
 struct TerrainVertexData {
 	D3DXVECTOR3 position;
-	D3DXVECTOR2 uv0;	
+	D3DXVECTOR3 normal;
+	D3DXVECTOR2 tcoord0;	
+	D3DXVECTOR2 tcoord1;
+	D3DXVECTOR2 tcoord2;
 };
 
 class Triangle {
@@ -54,8 +54,8 @@ private:
 public:
 	TerrainRenderer(IDirect3DDevice9* dev);
 	~TerrainRenderer();
-
-	void Create(int w, int h, int tl);
+		
+	void Create(std::vector<TerrainPoint> &tpoints);
 	void Render();
 	void Destroy();
 	void SetCamera(Camera *cam);
