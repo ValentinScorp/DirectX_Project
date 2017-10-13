@@ -58,9 +58,6 @@ public:
 	void Create(std::vector<TerrainPoint> &tpoints);
 	void Render();
 	void Destroy();
-	void SetCamera(Camera *cam);
-
-	D3DXVECTOR3 GetTerraneIntersection(RayVector rv);
-	bool IntersectRayTriangle(RayVector ray, Triangle triangle, D3DXVECTOR3 &intersectionVertex);
+	void SetCamera(Camera *cam);	
 };
 

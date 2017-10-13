@@ -319,14 +319,6 @@ void Renderer::Destroy()
 
 void Renderer::OnMessage(Message mess)
 {
-	if (mess.type == "user_input" && mess.name == "left_mouse_button_down") {
-		RayVector camRay = camera->GetVectorRay(mess.x, mess.y);
-		D3DXVECTOR3 intersection = terrainRenderer->GetTerraneIntersection(camRay);
-
-		//(*graph_objects)[1]->position.x = intersection.x;
-		//(*graph_objects)[1]->position.y = intersection.y;
-		//(*graph_objects)[1]->position.z = intersection.z;
-	}
 }
 
 Renderer::~Renderer()

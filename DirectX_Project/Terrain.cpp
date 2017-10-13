@@ -28,7 +28,9 @@ void Terrain::CreateGraphics(TerrainRenderer * tr)
 		auto tilesInPatch = p.GetTiles();
 		for (auto t : tilesInPatch) {
 			auto points = t.GetPoints();
-			tp.insert(tp.end(), points.begin(), points.end());
+			for (auto p : points) {
+				tp.push_back(p);
+			}		
 			t.ClearPoints();
 		}
 	}
@@ -43,11 +45,11 @@ D3DXVECTOR3 Terrain::GetTerraneIntersection(RayVector rv)
 		auto tiles = patch.GetTiles();
 		for (auto t : tiles) {
 			if (t.Intersection(rv, intersection)) {
-				break;
+				return intersection;
 			}
 		}
 	}
 	
-	return intersection;	
+	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 

@@ -11,8 +11,8 @@ TerrainTile::TerrainTile(D3DXVECTOR3 point1, D3DXVECTOR3 point2, D3DXVECTOR3 poi
 	triangle1.C.position = point2;
 
 	triangle2.A.position = point1;
-	triangle2.B.position = point3;
-	triangle2.C.position = point4;
+	triangle2.B.position = point4;
+	triangle2.C.position = point3;
 
 	triangle2.C.normal.x = 0;
 	triangle2.C.normal.y = 0;
@@ -20,12 +20,12 @@ TerrainTile::TerrainTile(D3DXVECTOR3 point1, D3DXVECTOR3 point2, D3DXVECTOR3 poi
 	triangle1.A.normal = triangle1.B.normal = triangle1.C.normal = triangle2.A.normal = triangle2.B.normal = triangle2.C.normal;
 
 	triangle1.A.textureCo.x = 0; triangle1.A.textureCo.y = 0;
-	triangle1.B.textureCo.x = 0; triangle1.B.textureCo.y = 1;
-	triangle1.C.textureCo.x = 1; triangle1.C.textureCo.y = 1;
+	triangle1.B.textureCo.x = 1; triangle1.B.textureCo.y = 1;
+	triangle1.C.textureCo.x = 0; triangle1.C.textureCo.y = 1;
 
 	triangle2.A.textureCo.x = 0; triangle2.A.textureCo.y = 0;
-	triangle2.B.textureCo.x = 0; triangle2.B.textureCo.y = 1;
-	triangle2.C.textureCo.x = 1; triangle2.C.textureCo.y = 0;
+	triangle2.B.textureCo.x = 1; triangle2.B.textureCo.y = 0;
+	triangle2.C.textureCo.x = 1; triangle2.C.textureCo.y = 1;
 
 	triangle1.A.alphaCo = triangle1.A.textureCo;
 	triangle1.B.alphaCo = triangle1.B.textureCo;
