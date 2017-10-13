@@ -14,7 +14,6 @@ Terrain::~Terrain()
 
 void Terrain::CreateGraphics(TerrainRenderer * tr)
 {
-
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			TerrainPatch patch(i, j, patchDimention, tile);

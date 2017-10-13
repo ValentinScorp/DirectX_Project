@@ -123,6 +123,11 @@ void TerrainRenderer::Destroy()
 		alphaCorner->Release();
 		alphaCorner = nullptr;
 	}
+	for (auto t : textures) {
+		if (t) {
+			delete t;
+		}
+	}
 
 	if (dxVertexBuffer) {
 		dxVertexBuffer->Release();
@@ -138,4 +143,18 @@ void TerrainRenderer::Destroy()
 void TerrainRenderer::SetCamera(Camera * cam)
 {
 	camera = cam;
+}
+
+size_t TerrainRenderer::CreateTexture(std::string textureFileName)
+{
+	size_t textureNum = textures.size();
+
+	std::wstring textureFileNameW(textureFileName.begin(), textureFileName.end());
+
+	IDirect3DTexture9* texturePtr = nullptr;
+	D3DXCreateTextureFromFile(dxDevice, textureFileNameW.c_str(), &texturePtr);
+
+	textures.push_back(texturePtr);
+
+	return textureNum;
 }

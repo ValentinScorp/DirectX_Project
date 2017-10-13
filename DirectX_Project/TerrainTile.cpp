@@ -37,6 +37,43 @@ TerrainTile::TerrainTile(D3DXVECTOR3 point1, D3DXVECTOR3 point2, D3DXVECTOR3 poi
 	
 }
 
+TerrainTile::TerrainTile(TerrainPoint point1, TerrainPoint point2, TerrainPoint point3, TerrainPoint point4)
+{
+	triangle1.A.position = point1.position;
+	triangle1.B.position = point3.position;
+	triangle1.C.position = point2.position;
+
+	triangle2.A.position = point1.position;
+	triangle2.B.position = point4.position;
+	triangle2.C.position = point3.position;
+
+	triangle2.C.normal.x = 0;
+	triangle2.C.normal.y = 0;
+	triangle2.C.normal.z = 1;
+	triangle1.A.normal = triangle1.B.normal = triangle1.C.normal = triangle2.A.normal = triangle2.B.normal = triangle2.C.normal;
+
+
+	triangle1.A.alphaCo.x = 0; triangle1.A.alphaCo.y = 0;
+	triangle1.B.alphaCo.x = 1; triangle1.B.alphaCo.y = 1;
+	triangle1.C.alphaCo.x = 0; triangle1.C.alphaCo.y = 1;
+
+	triangle2.A.alphaCo.x = 0; triangle2.A.alphaCo.y = 0;
+	triangle2.B.alphaCo.x = 1; triangle2.B.alphaCo.y = 0;
+	triangle2.C.alphaCo.x = 1; triangle2.C.alphaCo.y = 1;
+
+	triangle1.A.textureCo = point1.textureCo;
+	triangle1.B.textureCo = point3.textureCo;
+	triangle1.C.textureCo = point2.textureCo;
+
+	triangle2.A.textureCo = point1.textureCo;
+	triangle2.B.textureCo = point4.textureCo;
+	triangle2.C.textureCo = point2.textureCo;
+
+	textureIndexes[0] = 0;
+	textureIndexes[1] = 0;
+	alphaRotation = 0;
+}
+
 TerrainTile::~TerrainTile()
 {
 }
@@ -62,6 +99,16 @@ std::vector<TerrainPoint>& TerrainTile::GetPoints()
 void TerrainTile::ClearPoints()
 {
 	points.clear();
+}
+
+void TerrainTile::SetTextureIndex(size_t textureNum, size_t textureIndex)
+{
+	textureIndexes[textureNum] = textureIndex;
+}
+
+void TerrainTile::RotateAlpha(int rotateNum)
+{
+	alphaRotation = rotateNum;
 }
 
 bool TerrainTile::intersectRayTriangle(RayVector ray, Triangle triangle, D3DXVECTOR3 &intersectionVertex)

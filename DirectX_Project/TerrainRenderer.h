@@ -38,6 +38,8 @@ private:
 	IDirect3DTexture9* alphaSide = nullptr;
 	IDirect3DTexture9* alphaCorner = nullptr;
 
+	std::vector<IDirect3DTexture9*> textures;
+
 	std::vector<IDirect3DTexture9*> terrainTextures;
 	std::vector<IDirect3DTexture9*> alphaTextures;
 
@@ -59,5 +61,7 @@ public:
 	void Render();
 	void Destroy();
 	void SetCamera(Camera *cam);	
+
+	size_t CreateTexture(std::string textureFileName);
 };
 
