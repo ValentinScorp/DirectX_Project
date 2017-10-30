@@ -74,18 +74,8 @@ void TerrainRenderer::Render()
 	terrainShader->SetTexture("g_Texture3", rockTex);
 	terrainShader->SetTexture("g_AlphaCorner", alphaCorner);
 	terrainShader->SetTexture("g_AlphaSide", alphaSide);
-
-	texBIndex = 0;
-	texFIndex = 1;
-	texAIndex = 1;
-	texArIndex = 3;
-
-	terrainShader->SetInt("g_TexBackIndex", texBIndex);
-	terrainShader->SetInt("g_TexFrontIndex", texFIndex);
-	terrainShader->SetInt("g_AlghaIndex", texAIndex);
-	terrainShader->SetInt("g_AlghaRotationIndex", texArIndex);
-
-
+	terrainShader->SetTexture("g_AlphaFull", alphaFull);
+		
 	dxDevice->SetFVF(TERRAINFVF);
 	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TerrainVertexData));
 
@@ -93,10 +83,19 @@ void TerrainRenderer::Render()
 
 	UINT passesNum = 0;
 	terrainShader->Begin(&passesNum, 0);
-	for (UINT i = 0; i < passesNum; i++) {
-		terrainShader->BeginPass(i);
-		HRESULT hr = dxDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, numVertexes / 3);
-		terrainShader->EndPass();
+		
+	for (size_t i = 0; i < terrain->tiles.size(); i++) {
+
+		terrainShader->SetInt("g_TexBackIndex", terrain->tiles[i].GetTexBack());
+		terrainShader->SetInt("g_TexFrontIndex", terrain->tiles[i].GetTexFront());
+		terrainShader->SetInt("g_AlghaIndex", terrain->tiles[i].GetTexAlpha());
+		terrainShader->SetInt("g_AlghaRotationIndex", terrain->tiles[i].GetAlphaRotation());
+
+		for (UINT j = 0; j < passesNum; j++) {
+			terrainShader->BeginPass(j);
+			HRESULT hr = dxDevice->DrawPrimitive(D3DPT_TRIANGLELIST, i * 6, 2);	
+			terrainShader->EndPass();
+		}
 	}
 	terrainShader->End();	
 }
@@ -123,9 +122,14 @@ void TerrainRenderer::Destroy()
 		alphaCorner->Release();
 		alphaCorner = nullptr;
 	}
+	if (alphaFull) {
+		alphaCorner->Release();
+		alphaCorner = nullptr;
+	}
 	for (auto t : textures) {
 		if (t) {
-			delete t;
+			t->Release();
+			t = nullptr;
 		}
 	}
 
@@ -143,6 +147,11 @@ void TerrainRenderer::Destroy()
 void TerrainRenderer::SetCamera(Camera * cam)
 {
 	camera = cam;
+}
+
+void TerrainRenderer::SetTerrain(Terrain * t)
+{
+	terrain = t;
 }
 
 size_t TerrainRenderer::CreateTexture(std::string textureFileName)

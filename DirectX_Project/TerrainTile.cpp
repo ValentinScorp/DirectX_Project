@@ -67,10 +67,10 @@ TerrainTile::TerrainTile(TerrainPoint point1, TerrainPoint point2, TerrainPoint 
 
 	triangle2.A.textureCo = point1.textureCo;
 	triangle2.B.textureCo = point4.textureCo;
-	triangle2.C.textureCo = point2.textureCo;
+	triangle2.C.textureCo = point3.textureCo;
 
-	textureIndexes[0] = 0;
-	textureIndexes[1] = 0;
+	textureFront = 0;
+	textureBack = 0;
 	alphaRotation = 0;
 }
 
@@ -101,10 +101,46 @@ void TerrainTile::ClearPoints()
 	points.clear();
 }
 
-void TerrainTile::SetTextureIndex(size_t textureNum, size_t textureIndex)
+void TerrainTile::SetTexFront(size_t textureIndex)
 {
-	textureIndexes[textureNum] = textureIndex;
+	textureFront = textureIndex;
 }
+
+void TerrainTile::SetTexBack(size_t textureIndex)
+{
+	textureBack = textureIndex;
+}
+
+void TerrainTile::SetTexAlpha(size_t texIndex)
+{
+	textureAlpha = texIndex;
+}
+
+void TerrainTile::SetAlphaRotaion(int arot)
+{
+	alphaRotation = arot;
+}
+
+size_t TerrainTile::GetTexFront()
+{
+	return textureFront;
+}
+
+size_t TerrainTile::GetTexBack()
+{
+	return textureBack;
+}
+
+size_t TerrainTile::GetTexAlpha()
+{
+	return textureAlpha;
+}
+
+int TerrainTile::GetAlphaRotation()
+{
+	return alphaRotation;
+}
+
 
 void TerrainTile::RotateAlpha(int rotateNum)
 {

@@ -2,14 +2,17 @@
 
 #include <vector>
 
-#include "TerrainRenderer.h"
+//#include "TerrainRenderer.h"
 #include "TerrainPatch.h"
 #include "Camera.h"
+
+class TerrainRenderer;
 
 class Terrain
 {
 private:
-	std::vector <TerrainPatch> patches;
+	
+	//std::vector <TerrainPatch> patches;
 	TerrainRenderer *terrainRenderer = nullptr;
 	
 	int width;
@@ -17,6 +20,8 @@ private:
 	int patchDimention;
 	float tile;
 public:
+	std::vector <TerrainTile> tiles;
+
 	Terrain(int w, int h, float t);
 	~Terrain();
 

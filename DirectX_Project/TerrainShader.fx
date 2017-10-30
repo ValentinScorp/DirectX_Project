@@ -3,6 +3,7 @@ texture g_Texture2;
 texture g_Texture3;
 texture g_AlphaSide;
 texture g_AlphaCorner;
+texture g_AlphaFull;
 
 unsigned int g_TexBackIndex;
 unsigned int g_TexFrontIndex;
@@ -47,6 +48,15 @@ sampler AlphaCornerSampler =
 sampler_state
 {
 	Texture = < g_AlphaCorner >;
+	MipFilter = LINEAR;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+};
+
+sampler AlphaFullSampler =
+sampler_state
+{
+	Texture = < g_AlphaFull >;
 	MipFilter = LINEAR;
 	MinFilter = LINEAR;
 	MagFilter = LINEAR;
@@ -167,6 +177,9 @@ float4 RenderScenePS(	float2 inTexCoord0 : TEXCOORD0,
 		case (1):
 			alpha = tex2D(AlphaCornerSampler, inTexCoord2);
 			break;		
+		case (2):
+			alpha = tex2D(AlphaFullSampler, inTexCoord2);
+			break;
 		default:
 			break;
 	}

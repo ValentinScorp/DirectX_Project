@@ -20,6 +20,7 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 	terrain->CreateGraphics(r->GetTerrainRenderer());
 
 	r->GetTerrainRenderer()->SetCamera(camera);
+	r->GetTerrainRenderer()->SetTerrain(terrain);
 
 	objectFactory = of;
 	renderer = r;

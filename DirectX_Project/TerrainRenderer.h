@@ -6,6 +6,7 @@
 
 #include "Camera.h"
 #include "TerrainTile.h"
+#include "Terrain.h"
 
 #define TERRAINFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX3)
 
@@ -37,6 +38,7 @@ private:
 	
 	IDirect3DTexture9* alphaSide = nullptr;
 	IDirect3DTexture9* alphaCorner = nullptr;
+	IDirect3DTexture9* alphaFull = nullptr;
 
 	std::vector<IDirect3DTexture9*> textures;
 
@@ -44,6 +46,7 @@ private:
 	std::vector<IDirect3DTexture9*> alphaTextures;
 
 	std::vector <Triangle> triangles;
+	Terrain *terrain = nullptr;
 
 	ID3DXEffect* terrainShader = nullptr;
 	Camera *camera = nullptr;
@@ -61,6 +64,7 @@ public:
 	void Render();
 	void Destroy();
 	void SetCamera(Camera *cam);	
+	void SetTerrain(Terrain *t);
 
 	size_t CreateTexture(std::string textureFileName);
 };
