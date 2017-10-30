@@ -183,6 +183,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SmaLoader.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TerrainBrush.cpp" />
     <ClCompile Include="TerrainPatch.cpp" />
     <ClCompile Include="TerrainRenderer.cpp" />
     <ClCompile Include="TerrainTile.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="SmaLoader.h" />
     <ClInclude Include="sma_spec.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TerrainBrush.h" />
     <ClInclude Include="TerrainPatch.h" />
     <ClInclude Include="TerrainRenderer.h" />
     <ClInclude Include="TerrainTile.h" />

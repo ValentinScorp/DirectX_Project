@@ -72,6 +72,9 @@
     <ClCompile Include="TerrainTile.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainBrush.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -123,6 +126,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="TerrainTile.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainBrush.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

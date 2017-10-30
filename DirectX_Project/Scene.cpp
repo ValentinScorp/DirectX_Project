@@ -24,7 +24,10 @@ void Scene::Initialize(Renderer *r, ObjectFactory *of)
 
 	objectFactory = of;
 	renderer = r;
-	
+
+	terrainBrush = new TerrainBrush();
+	r->AddTerrainBrush(terrainBrush);
+
 	SmaLoader smaLoader;
 
 	GameObject *man = smaLoader.load("Cube.002.sma");	
@@ -72,6 +75,15 @@ void Scene::OnMessage(Message mes)
 		GameObject *go = GetGameObject("Cube.002");
 		tmpRun ? go->StartAnimation("Walk") : go->StopAnimation();
 	}
+
+	if (mes.type == "user_input" && mes.name == "mouse_move") {
+		
+		RayVector camRay = camera->GetVectorRay(mes.x, mes.y);
+		D3DXVECTOR3 intersection = terrain->GetTerraneIntersection(camRay);
+
+		terrainBrush->SetX(intersection.x);
+		terrainBrush->SetY(intersection.y);
+	}
 }
 
 void Scene::UpdateUnits(float dt)
@@ -106,9 +118,13 @@ void Scene::Destroy()
 	}
 	objects.clear();
 
+	if (terrainBrush) {
+		delete terrainBrush;
+	}
 	if (terrain != nullptr) {
 		delete terrain;
 	}
+
 }
 
 

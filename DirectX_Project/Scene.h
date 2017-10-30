@@ -6,6 +6,7 @@
 #include "ObjectFactory.h"
 #include "Terrain.h"
 #include "RigidBody.h"
+#include "TerrainBrush.h"
 
 class Scene : public MessageReceiver
 {
@@ -33,7 +34,7 @@ private:
 	Terrain *terrain = nullptr;
 
 	Camera *camera;
-
+	TerrainBrush *terrainBrush = nullptr;
 	bool tmpRun;
 };
 

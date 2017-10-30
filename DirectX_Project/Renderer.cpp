@@ -90,15 +90,18 @@ void Renderer::InitializeLightAndMaterials()
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
+void Renderer::AddTerrainBrush(TerrainBrush * tb)
+{
+	pDevice->CreateVertexBuffer(6 * sizeof(TERRBRUSHVERTEX), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, TERRBRUSHFVF, D3DPOOL_DEFAULT, &terrBrushVBuffer, NULL);
+
+	
+
+	terrainBrush = tb;
+}
+
 void Renderer::AddVertexes(CUSTOMVERTEX * vertexes, int vertexesNumb)
 {
 	pDevice->CreateVertexBuffer(vertexesNumb * sizeof(CUSTOMVERTEX), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, CUSTOMFVF, D3DPOOL_DEFAULT, &v_buffer, NULL);
-
-	//VOID* pVoid;
-
-//	v_buffer->Lock(0, 0, (void**)&pVoid, 0);
-//	memcpy(pVoid, vertexes, sizeof(CUSTOMVERTEX) * vertexesNumb);
-//	v_buffer->Unlock();
 }
 
 void Renderer::AddIndexes(int * indexes, int indexesNumb)
@@ -260,6 +263,43 @@ void Renderer::Draw()
 			}
 		}		
 	}
+
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);    // turn on the color blending
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);    // set source factor
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);    // set dest factor
+	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);    // set the operation
+
+	pDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DBLENDOP_ADD);
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+
+	D3DXMATRIX matTransform;
+	D3DXMatrixIdentity(&matTransform);
+	D3DXMatrixTranslation(&matTransform, terrainBrush->GetX(), terrainBrush->GetY(), 0.2f);
+	pDevice->SetTransform(D3DTS_WORLD, &matTransform);
+
+	pDevice->SetFVF(TERRBRUSHFVF);
+	pDevice->SetStreamSource(0, terrBrushVBuffer, 0, sizeof(TERRBRUSHVERTEX));
+
+	float hw = terrainBrush->GetWidth() / 2.0f;
+
+	TERRBRUSHVERTEX tbVerts[] = {
+		{ -hw, -hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ hw, hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ -hw, hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+
+		{ -hw, -hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ hw, -hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ hw, hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+	};
+
+	VOID *pVoid = nullptr;
+	terrBrushVBuffer->Lock(0, 6 * sizeof(TERRBRUSHVERTEX), (void**)&pVoid, D3DLOCK_DISCARD);
+	memcpy(pVoid, tbVerts, 6 * sizeof(TERRBRUSHVERTEX));
+	terrBrushVBuffer->Unlock();
+
+	pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
 }
 
 void Renderer::EndScene()
@@ -289,7 +329,10 @@ void Renderer::Destroy()
 		i_buffer->Release();
 		i_buffer = NULL;
 	}
-
+	if (terrBrushVBuffer) {
+		terrBrushVBuffer->Release();
+		terrBrushVBuffer = NULL;
+	}	
 	for (int i = 0; i < textures.size(); i++) {
 		if (textures[i]) {
 			textures[i]->Release();
