@@ -285,13 +285,13 @@ void Renderer::Draw()
 	float hw = terrainBrush->GetWidth() / 2.0f;
 
 	TERRBRUSHVERTEX tbVerts[] = {
-		{ -hw, -hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
-		{ hw, hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
-		{ -hw, hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ -hw, -hw, 0.01f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ hw, hw, 0.01f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ -hw, hw, 0.01f, D3DCOLOR_ARGB(100, 84, 230, 230) },
 
-		{ -hw, -hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
-		{ hw, -hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
-		{ hw, hw, 0.2f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ -hw, -hw, 0.01f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ hw, -hw, 0.01f, D3DCOLOR_ARGB(100, 84, 230, 230) },
+		{ hw, hw, 0.01f, D3DCOLOR_ARGB(100, 84, 230, 230) },
 	};
 
 	VOID *pVoid = nullptr;

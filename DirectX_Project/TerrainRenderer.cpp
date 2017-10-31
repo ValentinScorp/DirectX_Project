@@ -35,6 +35,7 @@ void TerrainRenderer::Create(std::vector<TerrainPoint>& tpoints)
 	D3DXCreateTextureFromFile(dxDevice, L"rock.png", &rockTex);
 	D3DXCreateTextureFromFile(dxDevice, L"alphaSide.png", &alphaSide);
 	D3DXCreateTextureFromFile(dxDevice, L"alphaCorner.png", &alphaCorner);
+	D3DXCreateTextureFromFile(dxDevice, L"alphaDiag.png", &alphaDiag);
 
 	HRESULT hr;
 	ID3DXBuffer *pErrors = nullptr;
@@ -75,6 +76,7 @@ void TerrainRenderer::Render()
 	terrainShader->SetTexture("g_AlphaCorner", alphaCorner);
 	terrainShader->SetTexture("g_AlphaSide", alphaSide);
 	terrainShader->SetTexture("g_AlphaFull", alphaFull);
+	terrainShader->SetTexture("g_AlphaDiag", alphaDiag);
 		
 	dxDevice->SetFVF(TERRAINFVF);
 	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TerrainVertexData));
@@ -125,6 +127,10 @@ void TerrainRenderer::Destroy()
 	if (alphaFull) {
 		alphaCorner->Release();
 		alphaCorner = nullptr;
+	}
+	if (alphaDiag) {
+		alphaDiag->Release();
+		alphaDiag = nullptr;
 	}
 	for (auto t : textures) {
 		if (t) {

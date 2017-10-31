@@ -13,7 +13,7 @@ TerrainPatch::TerrainPatch(int x, int y, int tilesDim, float tileSize)
 						2, 1,	1, 1 };
 
 	size_t alphaTex[] = {1, 0, 0, 1,
-						0, 2, 2, 0,
+						0, 3, 2, 0,
 						0, 2, 2, 0, 
 						1, 0, 0, 1};
 

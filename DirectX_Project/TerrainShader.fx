@@ -1,9 +1,11 @@
 texture g_Texture1;
 texture g_Texture2;
 texture g_Texture3;
+
 texture g_AlphaSide;
 texture g_AlphaCorner;
 texture g_AlphaFull;
+texture g_AlphaDiag;
 
 unsigned int g_TexBackIndex;
 unsigned int g_TexFrontIndex;
@@ -12,8 +14,7 @@ unsigned int g_AlghaRotationIndex;
 
 float4x4 g_mWorldViewProjection;    // World * View * Projection matrix
 
-sampler TextureSampler1 =
-sampler_state
+sampler TextureSampler1 = sampler_state
 {
 	Texture = < g_Texture1 >;
 	MipFilter = LINEAR;
@@ -57,6 +58,15 @@ sampler AlphaFullSampler =
 sampler_state
 {
 	Texture = < g_AlphaFull >;
+	MipFilter = LINEAR;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+};
+
+sampler AlphaDiagSampler =
+sampler_state
+{
+	Texture = < g_AlphaDiag >;
 	MipFilter = LINEAR;
 	MinFilter = LINEAR;
 	MagFilter = LINEAR;
@@ -179,6 +189,9 @@ float4 RenderScenePS(	float2 inTexCoord0 : TEXCOORD0,
 			break;		
 		case (2):
 			alpha = tex2D(AlphaFullSampler, inTexCoord2);
+			break;
+		case (3):
+			alpha = tex2D(AlphaDiagSampler, inTexCoord2);
 			break;
 		default:
 			break;

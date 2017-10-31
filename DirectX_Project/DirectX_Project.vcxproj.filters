@@ -171,6 +171,9 @@
     <Image Include="alphaFull.png">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="alphaDiag.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="cube.sma">

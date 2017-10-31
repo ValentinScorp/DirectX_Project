@@ -26,10 +26,15 @@ float TerrainBrush::GetY()
 
 void TerrainBrush::SetX(float x)
 {
-	posX = x;
+	int w = width;
+	int newx = (((int)x + w / 2) / w) * w;
+
+	posX = newx;
 }
 
 void TerrainBrush::SetY(float y)
 {
-	posY = y;
+	int w = width;
+	int newy = (((int)y + w / 2) / w) * w;
+	posY = newy;
 }

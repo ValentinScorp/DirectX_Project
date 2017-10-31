@@ -21,8 +21,8 @@ void Terrain::CreateGraphics(TerrainRenderer * tr)
 	tr->CreateTexture("alphaSide.png");
 	tr->CreateTexture("alphaCorner.png");
 	tr->CreateTexture("alphaFull.png");
-
-	
+	tr->CreateTexture("alphaDiag.png");
+		
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			TerrainPatch patch(i, j, patchDimention, tile);

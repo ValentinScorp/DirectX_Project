@@ -39,6 +39,7 @@ private:
 	IDirect3DTexture9* alphaSide = nullptr;
 	IDirect3DTexture9* alphaCorner = nullptr;
 	IDirect3DTexture9* alphaFull = nullptr;
+	IDirect3DTexture9* alphaDiag = nullptr;
 
 	std::vector<IDirect3DTexture9*> textures;
 
