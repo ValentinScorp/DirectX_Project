@@ -84,6 +84,7 @@ void Scene::OnMessage(Message mes)
 		terrainBrush->SetX(intersection.x);
 		terrainBrush->SetY(intersection.y);
 	}
+
 }
 
 void Scene::UpdateUnits(float dt)

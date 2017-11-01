@@ -1,10 +1,12 @@
 #include "TerrainRenderer.h"
 #include "UserInput.h"
 #include <DxErr.h>
+#include <time.h>
 
 TerrainRenderer::TerrainRenderer(IDirect3DDevice9* dev)
 {
 	dxDevice = dev;
+	srand(time(NULL));
 }
 
 
@@ -14,14 +16,16 @@ TerrainRenderer::~TerrainRenderer()
 
 void TerrainRenderer::Create(std::vector<TerrainPoint>& tpoints)
 {
+	for (int i = 0; i < (tpoints.size() / 6); i++) {
+		randTiles[i] = rand() % 2;
+	}
 	std::vector<TerrainVertexData> terrainVertexes;
 	for (auto tp : tpoints) {
 		TerrainVertexData tv;
 		tv.position = tp.position;
 		tv.normal = tp.normal;
 		tv.tcoord0 = tp.textureCo;
-		tv.tcoord1 = tp.textureCo;
-		tv.tcoord2 = tp.alphaCo;
+		tv.tcoord1 = tp.alphaCo;
 		terrainVertexes.push_back(tv);
 	}
 	numVertexes = terrainVertexes.size();
@@ -35,13 +39,14 @@ void TerrainRenderer::Create(std::vector<TerrainPoint>& tpoints)
 	D3DXCreateTextureFromFile(dxDevice, L"rock.png", &rockTex);
 	D3DXCreateTextureFromFile(dxDevice, L"alphaSide.png", &alphaSide);
 	D3DXCreateTextureFromFile(dxDevice, L"alphaCorner.png", &alphaCorner);
+	D3DXCreateTextureFromFile(dxDevice, L"alphaCornerNew.png", &alphaCornerNew);
 	D3DXCreateTextureFromFile(dxDevice, L"alphaDiag.png", &alphaDiag);
 
 	HRESULT hr;
 	ID3DXBuffer *pErrors = nullptr;
 	hr = D3DXCreateBuffer(1024, &pErrors);
 
-	hr = D3DXCreateEffectFromFile(dxDevice, L"TerrainShader.fx", NULL, NULL, D3DXFX_NOT_CLONEABLE | D3DXSHADER_DEBUG, NULL, &terrainShader, &pErrors);
+	hr = D3DXCreateEffectFromFile(dxDevice, L"TerrainShader2.fx", NULL, NULL, D3DXFX_NOT_CLONEABLE | D3DXSHADER_DEBUG, NULL, &terrainShader, &pErrors);	
 
 	if (FAILED(hr)) {
 		// Output shader compilation errors to the shell:
@@ -70,13 +75,15 @@ void TerrainRenderer::Render()
 	cameraMatrix = matView * matProjection;
 	
 	terrainShader->SetMatrix("g_mWorldViewProjection", &cameraMatrix);
-	terrainShader->SetTexture("g_Texture1", sandTex);
-	terrainShader->SetTexture("g_Texture2", grassTex);
-	terrainShader->SetTexture("g_Texture3", rockTex);
-	terrainShader->SetTexture("g_AlphaCorner", alphaCorner);
-	terrainShader->SetTexture("g_AlphaSide", alphaSide);
-	terrainShader->SetTexture("g_AlphaFull", alphaFull);
-	terrainShader->SetTexture("g_AlphaDiag", alphaDiag);
+
+	baseTexHandle = terrainShader->GetParameterByName(NULL, "g_TexBase");
+
+		
+	alphaHandle = terrainShader->GetParameterByName(NULL, "g_TexAlpha");
+	layer1TexHandle = terrainShader->GetParameterByName(NULL, "g_TexLayer1");
+	layer2TexHandle = terrainShader->GetParameterByName(NULL, "g_TexLayer2");
+	layer3TexHandle = terrainShader->GetParameterByName(NULL, "g_TexLayer3");
+	layer4TexHandle = terrainShader->GetParameterByName(NULL, "g_TexLayer4");
 		
 	dxDevice->SetFVF(TERRAINFVF);
 	dxDevice->SetStreamSource(0, dxVertexBuffer, 0, sizeof(TerrainVertexData));
@@ -86,20 +93,27 @@ void TerrainRenderer::Render()
 	UINT passesNum = 0;
 	terrainShader->Begin(&passesNum, 0);
 		
-	for (size_t i = 0; i < terrain->tiles.size(); i++) {
+	for (size_t i = 0; i < terrain->tiles.size(); i++) {		
+		
+		terrainShader->SetTexture(baseTexHandle, rockTex);
+		terrainShader->SetTexture(layer1TexHandle, grassTex);
+		terrainShader->SetTexture(layer2TexHandle, sandTex);
+		terrainShader->SetTexture(layer3TexHandle, rockTex);
+		terrainShader->SetTexture(layer4TexHandle, rockTex);
 
-		terrainShader->SetInt("g_TexBackIndex", terrain->tiles[i].GetTexBack());
-		terrainShader->SetInt("g_TexFrontIndex", terrain->tiles[i].GetTexFront());
-		terrainShader->SetInt("g_AlghaIndex", terrain->tiles[i].GetTexAlpha());
-		terrainShader->SetInt("g_AlghaRotationIndex", terrain->tiles[i].GetAlphaRotation());
-
+		if (randTiles[i] == 1)
+			terrainShader->SetTexture(alphaHandle, alphaCorner);
+		else
+			terrainShader->SetTexture(alphaHandle, alphaCornerNew);
+		
 		for (UINT j = 0; j < passesNum; j++) {
 			terrainShader->BeginPass(j);
 			HRESULT hr = dxDevice->DrawPrimitive(D3DPT_TRIANGLELIST, i * 6, 2);	
 			terrainShader->EndPass();
 		}
 	}
-	terrainShader->End();	
+
+	terrainShader->End();
 }
 
 void TerrainRenderer::Destroy()

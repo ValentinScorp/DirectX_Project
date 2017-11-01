@@ -190,5 +190,8 @@
     <FxCompile Include="TerrainShader.fx">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="TerrainShader2.fx">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

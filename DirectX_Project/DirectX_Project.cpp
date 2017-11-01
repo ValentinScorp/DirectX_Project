@@ -117,17 +117,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	GetCursorPos(&mMousePos);
 	ScreenToClient(hWnd, &mMousePos);	
 	RECT windowRect;
-	if (1/*!gWindow->IsFullscreen()*/) {
-		
-		GetWindowRect(hWnd, &windowRect);
-		
-		//mMousePos.x = mMousePos.x - windowRect.left;
-		//mMousePos.y = mMousePos.y - windowRect.top;
-	}
-	//mMousePos.y = 600 - mMousePos.y;
 
-	//xPos = mMousePos.x;
-	//yPos = mMousePos.y;
+	GetWindowRect(hWnd, &windowRect);
 
 	switch (message)
 	{

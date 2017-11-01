@@ -8,14 +8,13 @@
 #include "TerrainTile.h"
 #include "Terrain.h"
 
-#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX3)
+#define TERRAINFVF (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX2)
 
 struct TerrainVertexData {
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 normal;
 	D3DXVECTOR2 tcoord0;	
-	D3DXVECTOR2 tcoord1;
-	D3DXVECTOR2 tcoord2;
+	D3DXVECTOR2 tcoord1;	
 };
 
 class Triangle {
@@ -38,13 +37,24 @@ private:
 	
 	IDirect3DTexture9* alphaSide = nullptr;
 	IDirect3DTexture9* alphaCorner = nullptr;
+	IDirect3DTexture9* alphaCornerNew = nullptr;
 	IDirect3DTexture9* alphaFull = nullptr;
 	IDirect3DTexture9* alphaDiag = nullptr;
+
+	int randTiles[1024]; 
 
 	std::vector<IDirect3DTexture9*> textures;
 
 	std::vector<IDirect3DTexture9*> terrainTextures;
 	std::vector<IDirect3DTexture9*> alphaTextures;
+
+	D3DXHANDLE baseTexHandle;
+	D3DXHANDLE layer1TexHandle;
+	D3DXHANDLE layer2TexHandle;
+	D3DXHANDLE layer3TexHandle;
+	D3DXHANDLE layer4TexHandle;
+	D3DXHANDLE alphaHandle;
+	
 
 	std::vector <Triangle> triangles;
 	Terrain *terrain = nullptr;

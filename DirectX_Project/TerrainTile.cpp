@@ -34,7 +34,7 @@ TerrainTile::TerrainTile(D3DXVECTOR3 point1, D3DXVECTOR3 point2, D3DXVECTOR3 poi
 	triangle2.A.alphaCo = triangle2.A.textureCo;
 	triangle2.B.alphaCo = triangle2.B.textureCo;
 	triangle2.C.alphaCo = triangle2.C.textureCo;
-	
+
 }
 
 TerrainTile::TerrainTile(TerrainPoint point1, TerrainPoint point2, TerrainPoint point3, TerrainPoint point4)
