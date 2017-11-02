@@ -40,9 +40,7 @@ private:
 	IDirect3DTexture9* alphaCornerNew = nullptr;
 	IDirect3DTexture9* alphaFull = nullptr;
 	IDirect3DTexture9* alphaDiag = nullptr;
-
-	int randTiles[1024]; 
-
+	
 	std::vector<IDirect3DTexture9*> textures;
 
 	std::vector<IDirect3DTexture9*> terrainTextures;

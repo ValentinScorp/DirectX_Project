@@ -15,10 +15,7 @@ TerrainRenderer::~TerrainRenderer()
 }
 
 void TerrainRenderer::Create(std::vector<TerrainPoint>& tpoints)
-{
-	for (int i = 0; i < (tpoints.size() / 6); i++) {
-		randTiles[i] = rand() % 2;
-	}
+{	
 	std::vector<TerrainVertexData> terrainVertexes;
 	for (auto tp : tpoints) {
 		TerrainVertexData tv;
@@ -101,7 +98,7 @@ void TerrainRenderer::Render()
 		terrainShader->SetTexture(layer3TexHandle, rockTex);
 		terrainShader->SetTexture(layer4TexHandle, rockTex);
 
-		if (randTiles[i] == 1)
+		if (1)
 			terrainShader->SetTexture(alphaHandle, alphaCorner);
 		else
 			terrainShader->SetTexture(alphaHandle, alphaCornerNew);
